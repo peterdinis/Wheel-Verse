@@ -6,6 +6,7 @@ import { Geist } from "next/font/google";
 import BaseLayout from "~/components/shared/BaseLayout";
 import { ThemeProvider } from "~/components/shared/theme-provider";
 import { TRPCReactProvider } from "~/trpc/react";
+import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 
 export const metadata: Metadata = {
 	title: "Wheel Verse",
@@ -31,7 +32,10 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<BaseLayout>{children}</BaseLayout>
+						<BaseLayout>
+							{children}
+							<ScrollToTopButton />
+						</BaseLayout>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
