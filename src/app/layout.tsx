@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import BaseLayout from "~/components/shared/BaseLayout";
+import { ThemeProvider } from "~/components/shared/theme-provider";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
@@ -24,7 +25,16 @@ export default function RootLayout({
 		<html lang="en" className={`${geist.variable}`}>
 			<body>
 				<TRPCReactProvider>
-					<BaseLayout>{children}</BaseLayout>
+					<BaseLayout>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="system"
+							enableSystem
+							disableTransitionOnChange
+						>
+							{children}
+						</ThemeProvider>
+					</BaseLayout>
 				</TRPCReactProvider>
 			</body>
 		</html>

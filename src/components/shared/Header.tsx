@@ -5,6 +5,7 @@ import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import Link from "next/link";
 import { type FC, useState } from "react";
 import { Button } from "../ui/button";
+import { ModeToggle } from "./ModeToggle";
 
 const Header: FC = () => {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,6 +93,7 @@ const Header: FC = () => {
 							<Menu className="h-5 w-5" />
 						)}
 					</Button>
+					<ModeToggle />
 				</div>
 			</div>
 
