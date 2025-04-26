@@ -47,12 +47,6 @@ const Header: FC = () => {
 					>
 						Categories
 					</Link>
-					<Link
-						href="/about"
-						className="font-medium transition-colors hover:text-primary"
-					>
-						About
-					</Link>
 				</nav>
 
 				{/* Actions */}
@@ -128,13 +122,6 @@ const Header: FC = () => {
 								onClick={() => setIsMenuOpen(false)}
 							>
 								Categories
-							</Link>
-							<Link
-								href="/about"
-								className="font-medium transition-colors hover:text-primary"
-								onClick={() => setIsMenuOpen(false)}
-							>
-								About
 							</Link>
 						</nav>
 					</motion.div>
