@@ -25,16 +25,16 @@ export default function RootLayout({
 		<html lang="en" className={`${geist.variable}`}>
 			<body>
 				<TRPCReactProvider>
-					<BaseLayout>
 						<ThemeProvider
 							attribute="class"
 							defaultTheme="system"
 							enableSystem
 							disableTransitionOnChange
 						>
-							{children}
+							<BaseLayout>
+								{children}
+							</BaseLayout>
 						</ThemeProvider>
-					</BaseLayout>
 				</TRPCReactProvider>
 			</body>
 		</html>
