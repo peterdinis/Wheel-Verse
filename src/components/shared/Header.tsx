@@ -15,7 +15,7 @@ const Header: FC = () => {
 	const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
 
 	return (
-		<header className="fixed top-0 right-0 left-0 z-50 border-b dark:bg-stone-800/50 bg-white/80 backdrop-blur-md">
+		<header className="fixed top-0 right-0 left-0 z-50 border-b bg-white/80 backdrop-blur-md dark:bg-stone-800/50">
 			<div className="container mx-auto flex items-center justify-between px-4 py-3">
 				<Link href="/" className="font-bold text-2xl text-primary">
 					<motion.div
