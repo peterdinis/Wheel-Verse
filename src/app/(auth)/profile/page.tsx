@@ -3,7 +3,7 @@ import RegisterForm from "~/components/auth/RegisterForm";
 
 const ProfilePage: NextPage = () => {
     return (
-        <>TODO PROFILEW</>
+        <>TODO PROFILE</>
     )
 }
 
