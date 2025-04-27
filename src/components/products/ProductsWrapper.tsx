@@ -1,11 +1,7 @@
 import type { FC } from "react";
 
 const ProductsWrapper: FC = () => {
-    return (
-        <>
-            Products
-        </>
-    )
-}
+	return <>Products</>;
+};
 
-export default ProductsWrapper
+export default ProductsWrapper;

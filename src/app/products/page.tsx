@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import ProductsWrapper from "~/components/products/ProductsWrapper";
 
 const ProductsPage: NextPage = () => {
-    return <ProductsWrapper />
-}
+	return <ProductsWrapper />;
+};
 
-export default ProductsPage
+export default ProductsPage;

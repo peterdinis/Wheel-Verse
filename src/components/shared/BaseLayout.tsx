@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
-import Header from "./Header";
 import Footer from "./Footer";
+import Header from "./Header";
 
 type BaseLayoutProps = {
 	children?: ReactNode;

@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import BaseLayout from "~/components/shared/BaseLayout";
+import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 import { ThemeProvider } from "~/components/shared/theme-provider";
 import { TRPCReactProvider } from "~/trpc/react";
-import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 
 export const metadata: Metadata = {
 	title: "Wheel Verse",
