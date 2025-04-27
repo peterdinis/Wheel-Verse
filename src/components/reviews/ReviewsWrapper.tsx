@@ -3,8 +3,10 @@
 import { useState } from "react";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Textarea } from "../ui/textarea";
+import { Card, CardContent } from "../ui/card";
 
 // This would typically come from an API
 const reviews = [
