@@ -7,8 +7,8 @@ import { type FC, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
-import { ProductsSidebar } from "./ProductSidebar";
 import { PaginationControl } from "./PaginationControl";
+import { ProductsSidebar } from "./ProductSidebar";
 
 const products = [
 	{
@@ -303,7 +303,12 @@ const ProductsWrapper: FC = () => {
 												<span className="font-bold text-xl">
 													${product.price}
 												</span>
-												<Button className="dark:text-white text-black" size="sm">View Details</Button>
+												<Button
+													className="text-black dark:text-white"
+													size="sm"
+												>
+													View Details
+												</Button>
 											</div>
 										</div>
 									</Link>

@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import CategoriesWrapper from "~/components/categories/CategoriesWrapper";
 
 const CategoriesPage: NextPage = () => {
-    return <CategoriesWrapper />
-}
+	return <CategoriesWrapper />;
+};
 
-export default CategoriesPage
+export default CategoriesPage;
