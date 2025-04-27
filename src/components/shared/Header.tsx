@@ -87,6 +87,24 @@ const Header: FC = () => {
 							<Menu className="h-5 w-5" />
 						)}
 					</Button>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						aria-label="Menu"
+					>
+						<Link href="/register">Register</Link>
+					</Button>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						aria-label="Menu"
+					>
+						<Link href="/login">Login</Link>
+					</Button>
 					<ModeToggle />
 				</div>
 			</div>
@@ -122,6 +140,22 @@ const Header: FC = () => {
 								onClick={() => setIsMenuOpen(false)}
 							>
 								Categories
+							</Link>
+
+							<Link
+								href="/register"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
+								Register
+							</Link>
+
+							<Link
+								href="/login"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
+								Login
 							</Link>
 						</nav>
 					</motion.div>
