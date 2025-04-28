@@ -1,9 +1,7 @@
 import type { FC } from "react";
 
 const ProfileWrapper: FC = () => {
-    return (
-        <></>
-    )
-}
+	return <></>;
+};
 
 export default ProfileWrapper;
