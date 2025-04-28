@@ -1,6 +1,6 @@
 {
 	"name": "wheel-verse",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -14,12 +14,14 @@
 		"db:studio": "prisma studio",
 		"dev": "next dev --turbo",
 		"postinstall": "prisma generate",
+		"seed": "tsx prisma/seed.ts",
 		"preview": "next build && next start",
 		"start": "next start",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@auth/prisma-adapter": "^2.9.0",
+		"@faker-js/faker": "^9.7.0",
 		"@hookform/resolvers": "^5.0.1",
 		"@prisma/client": "^6.6.0",
 		"@radix-ui/react-dialog": "^1.1.11",
@@ -52,7 +54,8 @@
 		"superjson": "^2.2.2",
 		"tailwind-merge": "^3.2.0",
 		"three": "^0.176.0",
-		"zod": "^3.24.3"
+		"zod": "^3.24.3",
+		"zustand": "^5.0.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
@@ -64,6 +67,7 @@
 		"postcss": "^8.5.3",
 		"prisma": "^6.6.0",
 		"tailwindcss": "^4.1.4",
+		"tsx": "^4.19.3",
 		"tw-animate-css": "^1.2.8",
 		"typescript": "^5.8.3"
 	},
