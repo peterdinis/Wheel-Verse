@@ -62,6 +62,7 @@ model Product {
   imageUrl    String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  isAvaiable  Boolean   @default(true)
   reviews     Review[]
   carts       Cart[]
   categoryId  String?   
