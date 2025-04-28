@@ -54,8 +54,7 @@ export const categoryRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
-
-  // List categories (with search + pagination)
+    
   list: publicProcedure
     .input(
       z.object({
