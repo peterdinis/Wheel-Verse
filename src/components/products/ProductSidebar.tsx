@@ -13,13 +13,20 @@ import {
 	SidebarHeader,
 } from "../ui/sidebar";
 
+interface PriceRange {
+	id: string;
+	name: string;
+	min?: number;
+	max?: number;
+}
+
 interface ProductsSidebarProps {
 	selectedCategory: string;
 	setSelectedCategory: (category: string) => void;
 	selectedPriceRange: string;
-	setSelectedPriceRange: (range: string) => void;
+	setSelectedPriceRange: (rangeId: string, min?: number, max?: number) => void;
 	categories: { id: string; name: string }[];
-	priceRanges: { id: string; name: string }[];
+	priceRanges: PriceRange[];
 }
 
 export const ProductsSidebar = ({
@@ -30,6 +37,11 @@ export const ProductsSidebar = ({
 	categories,
 	priceRanges,
 }: ProductsSidebarProps) => {
+	const handlePriceRangeChange = (id: string) => {
+		const selected = priceRanges.find((range) => range.id === id);
+		setSelectedPriceRange(id, selected?.min, selected?.max);
+	};
+
 	return (
 		<Sidebar>
 			<SidebarHeader className="border-b p-4">
@@ -39,6 +51,7 @@ export const ProductsSidebar = ({
 				</div>
 			</SidebarHeader>
 			<SidebarContent>
+				{/* Kategórie */}
 				<SidebarGroup>
 					<SidebarGroupLabel className="font-medium text-muted-foreground text-sm">
 						Categories
@@ -73,6 +86,7 @@ export const ProductsSidebar = ({
 					</SidebarGroupContent>
 				</SidebarGroup>
 
+				{/* Cenové rozsahy */}
 				<SidebarGroup className="mt-6">
 					<SidebarGroupLabel className="font-medium text-muted-foreground text-sm">
 						Price Range
@@ -80,7 +94,7 @@ export const ProductsSidebar = ({
 					<SidebarGroupContent>
 						<RadioGroup
 							value={selectedPriceRange}
-							onValueChange={setSelectedPriceRange}
+							onValueChange={handlePriceRangeChange}
 							className="space-y-1"
 						>
 							{priceRanges.map((range) => (

@@ -9,81 +9,7 @@ import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { PaginationControl } from "./PaginationControl";
 import { ProductsSidebar } from "./ProductSidebar";
-
-const products = [
-	{
-		id: 1,
-		name: "Alpine Explorer X7",
-		category: "mountain",
-		price: 1299,
-		rating: 4.9,
-		image: "🚲",
-		description: 'Carbon frame, 29" wheels, premium suspension',
-	},
-	{
-		id: 2,
-		name: "Urban Speedster Pro",
-		category: "road",
-		price: 899,
-		rating: 4.8,
-		image: "🚲",
-		description: "Aerodynamic design, lightweight aluminum frame",
-	},
-	{
-		id: 3,
-		name: "E-Rider Turbo Max",
-		category: "electric",
-		price: 1899,
-		rating: 5.0,
-		image: "🚲",
-		description: "500W motor, 60-mile range, smart display",
-	},
-	{
-		id: 4,
-		name: "Trail Blazer S4",
-		category: "mountain",
-		price: 1099,
-		rating: 4.7,
-		image: "🚲",
-		description: "Durable frame, front suspension, all-terrain tires",
-	},
-	{
-		id: 5,
-		name: "City Cruiser Deluxe",
-		category: "urban",
-		price: 699,
-		rating: 4.6,
-		image: "🚲",
-		description: "Comfortable ride, basket included, upright position",
-	},
-	{
-		id: 6,
-		name: "Speed Demon Pro",
-		category: "road",
-		price: 1499,
-		rating: 4.9,
-		image: "🚲",
-		description: "Carbon frame, electronic shifting, aerodynamic",
-	},
-	{
-		id: 7,
-		name: "Mountain Master Elite",
-		category: "mountain",
-		price: 1599,
-		rating: 4.8,
-		image: "🚲",
-		description: "Full suspension, hydraulic brakes, tubeless ready",
-	},
-	{
-		id: 8,
-		name: "E-Commuter Plus",
-		category: "electric",
-		price: 1399,
-		rating: 4.7,
-		image: "🚲",
-		description: "350W motor, integrated lights, fenders included",
-	},
-];
+import { api } from "~/trpc/react";
 
 // Filter options
 const categories = [
@@ -110,6 +36,8 @@ const ProductsWrapper: FC = () => {
 	const [sortBy, setSortBy] = useState("featured");
 	const [filterOpen, setFilterOpen] = useState(false);
 
+	const { data, isLoading, isError } = api.product.list.useQuery({});
+
 	// Pagination state
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 6;
@@ -120,11 +48,11 @@ const ProductsWrapper: FC = () => {
 		priceRanges[0];
 
 	// Filter products based on search and filters
-	const filteredProducts = products.filter((product) => {
+	const filteredProducts = data?.products.filter((product) => {
 		// Filter by search query
 		const matchesSearch =
 			product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			product.description.toLowerCase().includes(searchQuery.toLowerCase());
+			product.description!.toLowerCase().includes(searchQuery.toLowerCase());
 
 		// Filter by category
 		const matchesCategory =
@@ -136,7 +64,7 @@ const ProductsWrapper: FC = () => {
 			product.price <= currentPriceRange!.max;
 
 		return matchesSearch && matchesCategory && matchesPrice;
-	});
+	}) || [];
 
 	// Sort products
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -234,116 +162,36 @@ const ProductsWrapper: FC = () => {
 								<option value="featured">Featured</option>
 								<option value="price-asc">Price: Low to High</option>
 								<option value="price-desc">Price: High to Low</option>
-								<option value="rating">Highest Rated</option>
+								<option value="rating">Rating</option>
 							</select>
-							<ChevronDown className="-translate-y-1/2 pointer-events-none absolute top-1/2 right-3 h-4 w-4 transform text-muted-foreground" />
 						</div>
 					</div>
 
-					{/* Products Grid */}
-					<div className="flex-grow">
-						{/* Results Count */}
-						<div className="mb-5">
-							<p className="text-muted-foreground">
-								Showing {indexOfFirstProduct + 1}-
-								{Math.min(indexOfLastProduct, sortedProducts.length)} of{" "}
-								{sortedProducts.length} results
-							</p>
-						</div>
-
-						{/* Products Grid */}
-						<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-							{currentProducts.map((product) => (
-								<motion.div
-									key={product.id}
-									className="group overflow-hidden rounded-xl bg-card shadow-sm transition-all duration-300 hover:shadow-md"
-									initial={{ opacity: 0, y: 20 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.4 }}
-									whileHover={{ y: -5 }}
-								>
-									<Link
-										href={`/products/${product.id}`}
-										className="relative block h-full"
-									>
-										<div
-											className={`flex h-48 items-center justify-center p-6 transition-colors duration-300 ${
-												product.category === "mountain"
-													? "bg-blue-100 dark:bg-blue-900/30"
-													: product.category === "road"
-														? "bg-green-100 dark:bg-green-900/30"
-														: product.category === "electric"
-															? "bg-purple-100 dark:bg-purple-900/30"
-															: "bg-yellow-100 dark:bg-yellow-900/30"
-											}`}
-										>
-											<span className="text-5xl transition-transform duration-300 group-hover:scale-110">
-												{product.image}
-											</span>
-										</div>
-										<div className="p-4">
-											<div className="mb-2 flex items-center justify-between">
-												<span className="font-medium text-primary text-xs uppercase">
-													{product.category} Bike
-												</span>
-												<div className="flex items-center">
-													<Star className="h-3 w-3 fill-current text-yellow-500" />
-													<span className="ml-1 font-medium text-xs">
-														{product.rating}
-													</span>
-												</div>
-											</div>
-											<h3 className="mb-1 font-semibold text-lg">
-												{product.name}
-											</h3>
-											<p className="mb-3 text-muted-foreground text-sm">
-												{product.description}
-											</p>
-											<div className="flex items-center justify-between">
-												<span className="font-bold text-xl">
-													${product.price}
-												</span>
-												<Button
-													className="text-black dark:text-white"
-													size="sm"
-												>
-													View Details
-												</Button>
-											</div>
-										</div>
-									</Link>
-								</motion.div>
-							))}
-						</div>
-
-						{/* Empty State */}
-						{sortedProducts.length === 0 && (
-							<div className="py-12 text-center">
-								<h3 className="mb-2 font-semibold text-xl">No bikes found</h3>
-								<p className="mb-4 text-muted-foreground">
-									Try adjusting your filters or search query
-								</p>
-								<Button
-									onClick={() => {
-										setSearchQuery("");
-										setSelectedCategory("all");
-										setSelectedPriceRange("all");
-									}}
-								>
-									Reset Filters
-								</Button>
+					{/* Product List */}
+					<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+						{currentProducts.map((product) => (
+							<div key={product.id} className="border p-6 rounded-lg">
+								<div className="flex justify-center mb-4">
+									<span className="text-6xl">{product.image}</span>
+								</div>
+								<h2 className="text-xl font-semibold">{product.name}</h2>
+								<p className="text-gray-600">{product.description}</p>
+								<p className="text-lg font-bold mt-2">${product.price}</p>
+								<div className="mt-4 flex items-center">
+									<Star className="h-5 w-5 text-yellow-400" />
+									<span className="ml-2">{product.rating}</span>
+								</div>
 							</div>
-						)}
-
-						{/* Pagination */}
-						{sortedProducts.length > 0 && (
-							<PaginationControl
-								currentPage={currentPage}
-								totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
-								onPageChange={handlePageChange}
-							/>
-						)}
+						))}
 					</div>
+
+					{/* Pagination */}
+					<PaginationControl
+						totalItems={filteredProducts.length}
+						itemsPerPage={productsPerPage}
+						currentPage={currentPage}
+						onPageChange={handlePageChange}
+					/>
 				</div>
 			</div>
 		</SidebarProvider>
