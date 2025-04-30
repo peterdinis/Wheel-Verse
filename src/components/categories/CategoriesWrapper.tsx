@@ -2,9 +2,17 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import type { FC } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
+import { Input } from "../ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "../ui/select";
 
 const categories = [
 	{
@@ -41,7 +49,29 @@ const categories = [
 	},
 ];
 
-const CategoriesWrapper: FC = () => {
+const CategoriesWrapper = () => {
+	const [search, setSearch] = useState("");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [itemsPerPage, setItemsPerPage] = useState(2);
+
+	const filteredCategories = useMemo(() => {
+		return categories.filter((cat) =>
+			cat.name.toLowerCase().includes(search.toLowerCase())
+		);
+	}, [search]);
+
+	const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+	const paginated = filteredCategories.slice(
+		(currentPage - 1) * itemsPerPage,
+		currentPage * itemsPerPage
+	);
+
+	const handlePageChange = (dir: "prev" | "next") => {
+		setCurrentPage((prev) =>
+			dir === "prev" ? Math.max(prev - 1, 1) : Math.min(prev + 1, totalPages)
+		);
+	};
+
 	return (
 		<div className="container mx-auto px-4 py-16">
 			<motion.div
@@ -57,8 +87,39 @@ const CategoriesWrapper: FC = () => {
 				</p>
 			</motion.div>
 
+			<div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+				<Input
+					placeholder="Search categories..."
+					value={search}
+					onChange={(e) => {
+						setSearch(e.target.value);
+						setCurrentPage(1);
+					}}
+					className="w-full md:w-1/3"
+				/>
+
+				<div className="flex items-center gap-4">
+					<Select
+						value={itemsPerPage.toString()}
+						onValueChange={(val) => {
+							setItemsPerPage(Number(val));
+							setCurrentPage(1);
+						}}
+					>
+						<SelectTrigger className="w-[120px]">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="2">2 per page</SelectItem>
+							<SelectItem value="4">4 per page</SelectItem>
+							<SelectItem value="6">6 per page</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			</div>
+
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
-				{categories.map((category, index) => (
+				{paginated.map((category, index) => (
 					<motion.div
 						key={category.id}
 						initial={{ opacity: 0, y: 20 }}
@@ -93,6 +154,29 @@ const CategoriesWrapper: FC = () => {
 					</motion.div>
 				))}
 			</div>
+
+			{/* Pagination Controls */}
+			{totalPages > 1 && (
+				<div className="mt-10 flex items-center justify-center gap-4">
+					<Button
+						variant="outline"
+						onClick={() => handlePageChange("prev")}
+						disabled={currentPage === 1}
+					>
+						Previous
+					</Button>
+					<span className="text-muted-foreground">
+						Page {currentPage} of {totalPages}
+					</span>
+					<Button
+						variant="outline"
+						onClick={() => handlePageChange("next")}
+						disabled={currentPage === totalPages}
+					>
+						Next
+					</Button>
+				</div>
+			)}
 		</div>
 	);
 };
