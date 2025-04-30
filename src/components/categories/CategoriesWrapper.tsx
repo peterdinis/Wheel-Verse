@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
@@ -13,58 +13,23 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select";
+import { api } from "~/trpc/react";
 
-const categories = [
-	{
-		id: "mountain",
-		name: "Mountain Bikes",
-		description: "Perfect for off-road adventures and trail riding",
-		image: "🏔️",
-		count: 12,
-		color: "bg-blue-100 dark:bg-blue-900/30",
-	},
-	{
-		id: "road",
-		name: "Road Bikes",
-		description: "Built for speed and efficiency on paved roads",
-		image: "🛣️",
-		count: 8,
-		color: "bg-green-100 dark:bg-green-900/30",
-	},
-	{
-		id: "electric",
-		name: "Electric Bikes",
-		description: "Power-assisted cycling for effortless rides",
-		image: "⚡",
-		count: 10,
-		color: "bg-purple-100 dark:bg-purple-900/30",
-	},
-	{
-		id: "urban",
-		name: "Urban Bikes",
-		description: "Comfortable and stylish for city commuting",
-		image: "🌆",
-		count: 6,
-		color: "bg-yellow-100 dark:bg-yellow-900/30",
-	},
-];
 
 const CategoriesWrapper = () => {
 	const [search, setSearch] = useState("");
 	const [currentPage, setCurrentPage] = useState(1);
 	const [itemsPerPage, setItemsPerPage] = useState(2);
 
-	const filteredCategories = useMemo(() => {
-		return categories.filter((cat) =>
-			cat.name.toLowerCase().includes(search.toLowerCase())
-		);
-	}, [search]);
+	const { data, isLoading, isError } = api.category.list.useQuery({
+		search,
+		page: currentPage,
+		limit: itemsPerPage,
+	});
 
-	const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
-	const paginated = filteredCategories.slice(
-		(currentPage - 1) * itemsPerPage,
-		currentPage * itemsPerPage
-	);
+	// Handle loading and error states
+	if (isLoading) return <div>Loading...</div>;
+	if (isError) return <div>Error fetching categories</div>;
 
 	const handlePageChange = (dir: "prev" | "next") => {
 		setCurrentPage((prev) =>
