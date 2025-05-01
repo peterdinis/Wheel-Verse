@@ -2,13 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Search, X } from "lucide-react";
+import Image from "next/image";
 import { type FC, useEffect, useState } from "react";
+import { api } from "~/trpc/react";
 import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { PaginationControl } from "./PaginationControl";
 import { ProductsSidebar } from "./ProductSidebar";
-import { api } from "~/trpc/react";
-import Image from "next/image";
 
 // Filter options
 const categories = [
@@ -46,19 +46,20 @@ const ProductsWrapper: FC = () => {
 		priceRanges[0];
 
 	// Filter products based on search and filters
-	const filteredProducts = data?.products.filter((product) => {
-		// Filter by search query
-		const matchesSearch =
-			product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			product.description!.toLowerCase().includes(searchQuery.toLowerCase());
+	const filteredProducts =
+		data?.products.filter((product) => {
+			// Filter by search query
+			const matchesSearch =
+				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				product.description!.toLowerCase().includes(searchQuery.toLowerCase());
 
-		// Filter by price range
-		const matchesPrice =
-			product.price >= currentPriceRange!.min &&
-			product.price <= currentPriceRange!.max;
+			// Filter by price range
+			const matchesPrice =
+				product.price >= currentPriceRange!.min &&
+				product.price <= currentPriceRange!.max;
 
-		return matchesSearch && matchesPrice;
-	}) || [];
+			return matchesSearch && matchesPrice;
+		}) || [];
 
 	// Sort products
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -87,8 +88,13 @@ const ProductsWrapper: FC = () => {
 		setCurrentPage(1);
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
-	if (isLoading) return <Loader2 className="animate-spin w-8 h-8" />
-	if (isError) return <div className="text-red-800 font-bold text-xl mt-4">Error fetching products</div>;
+	if (isLoading) return <Loader2 className="h-8 w-8 animate-spin" />;
+	if (isError)
+		return (
+			<div className="mt-4 font-bold text-red-800 text-xl">
+				Error fetching products
+			</div>
+		);
 	return (
 		<SidebarProvider>
 			<div className="flex min-h-screen w-full">
@@ -163,8 +169,8 @@ const ProductsWrapper: FC = () => {
 					{/* Product List */}
 					<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 						{currentProducts.map((product) => (
-							<div key={product.id} className="border p-6 rounded-lg">
-								<div className="flex justify-center mb-4">
+							<div key={product.id} className="rounded-lg border p-6">
+								<div className="mb-4 flex justify-center">
 									<Image
 										src={product.imageUrl!}
 										alt={product.name}
@@ -172,9 +178,11 @@ const ProductsWrapper: FC = () => {
 										height={100}
 									/>
 								</div>
-								<h2 className="text-xl font-semibold">{product.name}</h2>
-								<p className="text-gray-600 dark:text-blue-50">{product.description}</p>
-								<p className="text-lg font-bold mt-2">${product.price}</p>
+								<h2 className="font-semibold text-xl">{product.name}</h2>
+								<p className="text-gray-600 dark:text-blue-50">
+									{product.description}
+								</p>
+								<p className="mt-2 font-bold text-lg">${product.price}</p>
 							</div>
 						))}
 					</div>

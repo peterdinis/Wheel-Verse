@@ -73,7 +73,7 @@ const HeroLayout: FC = () => {
 						>
 							<Button
 								size="lg"
-								className="group dark:text-white text-black transition-all duration-300 hover:scale-105"
+								className="group text-black transition-all duration-300 hover:scale-105 dark:text-white"
 								asChild
 							>
 								<Link href="/products">
