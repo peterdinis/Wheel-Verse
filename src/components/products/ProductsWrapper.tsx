@@ -1,15 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Search, Star, X } from "lucide-react";
-import Link from "next/link";
+import { Loader2, Search,  X } from "lucide-react";
 import { type FC, useEffect, useState } from "react";
-import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { PaginationControl } from "./PaginationControl";
 import { ProductsSidebar } from "./ProductSidebar";
 import { api } from "~/trpc/react";
+import Image from "next/image";
 
 // Filter options
 const categories = [
@@ -34,9 +33,8 @@ const ProductsWrapper: FC = () => {
 	const [selectedCategory, setSelectedCategory] = useState("all");
 	const [selectedPriceRange, setSelectedPriceRange] = useState("all");
 	const [sortBy, setSortBy] = useState("featured");
-	const [filterOpen, setFilterOpen] = useState(false);
 
-	const { data, isLoading, isError } = api.product.list.useQuery({});
+	const { data, isLoading} = api.product.list.useQuery({});
 
 	// Pagination state
 	const [currentPage, setCurrentPage] = useState(1);
@@ -54,23 +52,18 @@ const ProductsWrapper: FC = () => {
 			product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			product.description!.toLowerCase().includes(searchQuery.toLowerCase());
 
-		// Filter by category
-		const matchesCategory =
-			selectedCategory === "all" || product.category === selectedCategory;
-
 		// Filter by price range
 		const matchesPrice =
 			product.price >= currentPriceRange!.min &&
 			product.price <= currentPriceRange!.max;
 
-		return matchesSearch && matchesCategory && matchesPrice;
+		return matchesSearch && matchesPrice;
 	}) || [];
 
 	// Sort products
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
 		if (sortBy === "price-asc") return a.price - b.price;
 		if (sortBy === "price-desc") return b.price - a.price;
-		if (sortBy === "rating") return b.rating - a.rating;
 		// Default: featured
 		return 0;
 	});
@@ -94,7 +87,7 @@ const ProductsWrapper: FC = () => {
 		setCurrentPage(1);
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
-	const toggleFilter = () => setFilterOpen(!filterOpen);
+	if(isLoading) return <Loader2 className="animate-spin w-8 h-8" />
 
 	return (
 		<SidebarProvider>
@@ -172,15 +165,18 @@ const ProductsWrapper: FC = () => {
 						{currentProducts.map((product) => (
 							<div key={product.id} className="border p-6 rounded-lg">
 								<div className="flex justify-center mb-4">
-									<span className="text-6xl">{product.image}</span>
+									<Image 
+										src={product.imageUrl!}
+										alt={product.name 
+
+										}
+										width={100}
+										height={100}
+									/>
 								</div>
 								<h2 className="text-xl font-semibold">{product.name}</h2>
 								<p className="text-gray-600">{product.description}</p>
 								<p className="text-lg font-bold mt-2">${product.price}</p>
-								<div className="mt-4 flex items-center">
-									<Star className="h-5 w-5 text-yellow-400" />
-									<span className="ml-2">{product.rating}</span>
-								</div>
 							</div>
 						))}
 					</div>
