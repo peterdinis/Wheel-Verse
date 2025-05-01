@@ -47,6 +47,29 @@ const Header: FC = () => {
 					>
 						Categories
 					</Link>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						onClick={toggleMenu}
+						aria-label="Menu"
+					>
+						{isMenuOpen ? (
+							<X className="h-5 w-5" />
+						) : (
+							<Menu className="h-5 w-5" />
+						)}
+					</Button>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						aria-label="Menu"
+					>
+						<Link href="/register">Register</Link>
+					</Button>
 				</nav>
 
 				{/* Actions */}
@@ -73,29 +96,6 @@ const Header: FC = () => {
 							</span>
 						</Button>
 					</Link>
-
-					<Button
-						variant="ghost"
-						size="icon"
-						className="md:hidden"
-						onClick={toggleMenu}
-						aria-label="Menu"
-					>
-						{isMenuOpen ? (
-							<X className="h-5 w-5" />
-						) : (
-							<Menu className="h-5 w-5" />
-						)}
-					</Button>
-
-					<Button
-						variant="ghost"
-						size="icon"
-						className="md:hidden"
-						aria-label="Menu"
-					>
-						<Link href="/register">Register</Link>
-					</Button>
 
 					<Button
 						variant="ghost"
