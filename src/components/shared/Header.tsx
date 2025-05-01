@@ -1,14 +1,19 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, Search, ShoppingCart, X, User } from "lucide-react";
+import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { type FC, useState } from "react";
-import { Button } from "../ui/button";
-import { ModeToggle } from "./ModeToggle";
-import { useSession, signOut } from "next-auth/react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { ModeToggle } from "./ModeToggle";
 
 const Header: FC = () => {
 	const { data: session } = useSession();
@@ -26,7 +31,10 @@ const Header: FC = () => {
 		<header className="fixed top-0 right-0 left-0 z-50 border-b bg-white/80 backdrop-blur-md dark:bg-stone-800/50">
 			<div className="container mx-auto flex items-center justify-between px-4 py-3">
 				<Link href="/" className="font-bold text-2xl text-primary">
-					<motion.div whileHover={{ scale: 1.05 }} className="flex items-center">
+					<motion.div
+						whileHover={{ scale: 1.05 }}
+						className="flex items-center"
+					>
 						<span className="mr-1 text-3xl">🚲</span>
 						WheelVerse
 					</motion.div>
@@ -34,34 +42,65 @@ const Header: FC = () => {
 
 				{/* Desktop Navigation */}
 				<nav className="hidden items-center space-x-6 md:flex">
-					<Link href="/" className="font-medium transition-colors hover:text-primary">
+					<Link
+						href="/"
+						className="font-medium transition-colors hover:text-primary"
+					>
 						Home
 					</Link>
-					<Link href="/products" className="font-medium transition-colors hover:text-primary">
+					<Link
+						href="/products"
+						className="font-medium transition-colors hover:text-primary"
+					>
 						Products
 					</Link>
-					<Link href="/categories" className="font-medium transition-colors hover:text-primary">
+					<Link
+						href="/categories"
+						className="font-medium transition-colors hover:text-primary"
+					>
 						Categories
 					</Link>
 
-					<Button variant="ghost" size="icon" className="md:hidden" onClick={toggleMenu} aria-label="Menu">
-						{isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						onClick={toggleMenu}
+						aria-label="Menu"
+					>
+						{isMenuOpen ? (
+							<X className="h-5 w-5" />
+						) : (
+							<Menu className="h-5 w-5" />
+						)}
 					</Button>
 
 					{session ? (
 						<DropdownMenu>
 							<DropdownMenuTrigger>
 								<Avatar>
-									<AvatarImage src={session.user?.image ?? "/default-avatar.png"} alt="User Avatar" />
-									<AvatarFallback>{session.user?.name?.charAt(0)}</AvatarFallback>
+									<AvatarImage
+										src={session.user?.image ?? "/default-avatar.png"}
+										alt="User Avatar"
+									/>
+									<AvatarFallback>
+										{session.user?.name?.charAt(0)}
+									</AvatarFallback>
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent>
-								<DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
+								<DropdownMenuItem onClick={handleLogout}>
+									Logout
+								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					) : (
-						<Button variant="ghost" size="icon" className="md:hidden" aria-label="Login">
+						<Button
+							variant="ghost"
+							size="icon"
+							className="md:hidden"
+							aria-label="Login"
+						>
 							<Link href="/login">Login</Link>
 						</Button>
 					)}
@@ -69,12 +108,22 @@ const Header: FC = () => {
 
 				{/* Actions */}
 				<div className="flex items-center space-x-4">
-					<Button variant="ghost" size="icon" onClick={toggleSearch} aria-label="Search">
+					<Button
+						variant="ghost"
+						size="icon"
+						onClick={toggleSearch}
+						aria-label="Search"
+					>
 						<Search className="h-5 w-5" />
 					</Button>
 
 					<Link href="/cart">
-						<Button variant="ghost" size="icon" aria-label="Cart" className="relative">
+						<Button
+							variant="ghost"
+							size="icon"
+							aria-label="Cart"
+							className="relative"
+						>
 							<ShoppingCart className="h-5 w-5" />
 							<span className="-top-1 -right-1 absolute flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs">
 								2
@@ -97,21 +146,41 @@ const Header: FC = () => {
 						transition={{ duration: 0.3 }}
 					>
 						<nav className="flex flex-col space-y-4 p-4">
-							<Link href="/" className="font-medium transition-colors hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+							<Link
+								href="/"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
 								Home
 							</Link>
-							<Link href="/products" className="font-medium transition-colors hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+							<Link
+								href="/products"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
 								Products
 							</Link>
-							<Link href="/categories" className="font-medium transition-colors hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+							<Link
+								href="/categories"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
 								Categories
 							</Link>
 
-							<Link href="/register" className="font-medium transition-colors hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+							<Link
+								href="/register"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
 								Register
 							</Link>
 
-							<Link href="/login" className="font-medium transition-colors hover:text-primary" onClick={() => setIsMenuOpen(false)}>
+							<Link
+								href="/login"
+								className="font-medium transition-colors hover:text-primary"
+								onClick={() => setIsMenuOpen(false)}
+							>
 								Login
 							</Link>
 						</nav>

@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { SessionProvider } from "next-auth/react";
 import BaseLayout from "~/components/shared/BaseLayout";
 import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 import { ThemeProvider } from "~/components/shared/theme-provider";
@@ -33,12 +34,14 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<BaseLayout>
-							<ToastProvider>
-								{children}
-								<ScrollToTopButton />
-							</ToastProvider>
-						</BaseLayout>
+						<SessionProvider>
+							<BaseLayout>
+								<ToastProvider>
+									{children}
+									<ScrollToTopButton />
+								</ToastProvider>
+							</BaseLayout>
+						</SessionProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
