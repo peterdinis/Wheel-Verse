@@ -63,6 +63,7 @@ model Product {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   isAvaiable  Boolean   @default(true)
+  rating      Int       @default(1)
   reviews     Review[]
   carts       Cart[]
   categoryId  String?   

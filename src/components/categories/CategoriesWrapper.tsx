@@ -85,7 +85,7 @@ const CategoriesWrapper = () => {
 			</div>
 
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
-				{data.categories && data.categories.map((category, index) => (
+				{data?.categories && data?.categories.map((category, index) => (
 					<motion.div
 						key={category.id}
 						initial={{ opacity: 0, y: 20 }}
@@ -95,18 +95,13 @@ const CategoriesWrapper = () => {
 						<Link href={`/products?category=${category.id}`}>
 							<Card className="transition-shadow duration-300 hover:shadow-lg">
 								<CardContent className="p-6">
-									<div
-										className={`${category.color} mb-6 rounded-lg p-8 text-center`}
-									>
-										<span className="text-6xl">{category.image}</span>
-									</div>
 									<div className="space-y-4">
 										<div className="flex items-center justify-between">
 											<h3 className="font-semibold text-2xl">
 												{category.name}
 											</h3>
 											<span className="text-muted-foreground text-sm">
-												{category.count} bikes
+												TODO count bikes
 											</span>
 										</div>
 										<p className="text-muted-foreground">
@@ -120,29 +115,6 @@ const CategoriesWrapper = () => {
 					</motion.div>
 				))}
 			</div>
-
-			{/* Pagination Controls */}
-			{totalPages > 1 && (
-				<div className="mt-10 flex items-center justify-center gap-4">
-					<Button
-						variant="outline"
-						onClick={() => handlePageChange("prev")}
-						disabled={currentPage === 1}
-					>
-						Previous
-					</Button>
-					<span className="text-muted-foreground">
-						Page {currentPage} of {totalPages}
-					</span>
-					<Button
-						variant="outline"
-						onClick={() => handlePageChange("next")}
-						disabled={currentPage === totalPages}
-					>
-						Next
-					</Button>
-				</div>
-			)}
 		</div>
 	);
 };
