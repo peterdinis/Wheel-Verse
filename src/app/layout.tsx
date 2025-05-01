@@ -3,12 +3,12 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 
+import { SessionProvider } from "next-auth/react";
 import BaseLayout from "~/components/shared/BaseLayout";
 import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 import { ThemeProvider } from "~/components/shared/theme-provider";
 import { ToastProvider } from "~/components/ui/toast";
 import { TRPCReactProvider } from "~/trpc/react";
-import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
 	title: "Wheel Verse",
@@ -35,12 +35,12 @@ export default function RootLayout({
 						disableTransitionOnChange
 					>
 						<SessionProvider>
-						<BaseLayout>
-							<ToastProvider>
-								{children}
-								<ScrollToTopButton />
-							</ToastProvider>
-						</BaseLayout>
+							<BaseLayout>
+								<ToastProvider>
+									{children}
+									<ScrollToTopButton />
+								</ToastProvider>
+							</BaseLayout>
 						</SessionProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>

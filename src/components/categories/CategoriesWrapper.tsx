@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import { Input } from "../ui/input";
@@ -13,9 +15,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "../ui/select";
-import { api } from "~/trpc/react";
-import { Loader2 } from "lucide-react";
-
 
 const CategoriesWrapper = () => {
 	const [search, setSearch] = useState("");
@@ -29,12 +28,12 @@ const CategoriesWrapper = () => {
 	});
 
 	// Handle loading and error states
-	if (isLoading) return <Loader2 className="animate-spin w-8 h-8" />
+	if (isLoading) return <Loader2 className="h-8 w-8 animate-spin" />;
 	if (isError) return <div>Error fetching categories</div>;
 
 	const handlePageChange = (dir: "prev" | "next") => {
 		setCurrentPage((prev) =>
-			dir === "prev" ? Math.max(prev - 1, 1) : Math.min(prev + 1)
+			dir === "prev" ? Math.max(prev - 1, 1) : Math.min(prev + 1),
 		);
 	};
 
@@ -85,35 +84,36 @@ const CategoriesWrapper = () => {
 			</div>
 
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
-				{data?.categories && data?.categories.map((category, index) => (
-					<motion.div
-						key={category.id}
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: index * 0.1 }}
-					>
-						<Link href={`/products?category=${category.id}`}>
-							<Card className="transition-shadow duration-300 hover:shadow-lg">
-								<CardContent className="p-6">
-									<div className="space-y-4">
-										<div className="flex items-center justify-between">
-											<h3 className="font-semibold text-2xl">
-												{category.name}
-											</h3>
-											<span className="text-muted-foreground text-sm">
-												TODO count bikes
-											</span>
+				{data?.categories &&
+					data?.categories.map((category, index) => (
+						<motion.div
+							key={category.id}
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5, delay: index * 0.1 }}
+						>
+							<Link href={`/products?category=${category.id}`}>
+								<Card className="transition-shadow duration-300 hover:shadow-lg">
+									<CardContent className="p-6">
+										<div className="space-y-4">
+											<div className="flex items-center justify-between">
+												<h3 className="font-semibold text-2xl">
+													{category.name}
+												</h3>
+												<span className="text-muted-foreground text-sm">
+													TODO count bikes
+												</span>
+											</div>
+											<p className="text-muted-foreground">
+												{category.description}
+											</p>
+											<Button className="w-full">Browse {category.name}</Button>
 										</div>
-										<p className="text-muted-foreground">
-											{category.description}
-										</p>
-										<Button className="w-full">Browse {category.name}</Button>
-									</div>
-								</CardContent>
-							</Card>
-						</Link>
-					</motion.div>
-				))}
+									</CardContent>
+								</Card>
+							</Link>
+						</motion.div>
+					))}
 			</div>
 		</div>
 	);

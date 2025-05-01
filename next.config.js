@@ -8,15 +8,15 @@ import "./src/env.js";
 const config = {
 	reactStrictMode: true,
 	images: {
-        remotePatterns: [
-            {
-                protocol: 'https',
-                hostname: '*',
-                port: '',
-                pathname: '/**',
-            },
-        ],
-    }
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "*",
+				port: "",
+				pathname: "/**",
+			},
+		],
+	},
 };
 
 export default config;
