@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Search,  X } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { type FC, useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
@@ -34,7 +34,7 @@ const ProductsWrapper: FC = () => {
 	const [selectedPriceRange, setSelectedPriceRange] = useState("all");
 	const [sortBy, setSortBy] = useState("featured");
 
-	const { data, isLoading} = api.product.list.useQuery({});
+	const { data, isLoading } = api.product.list.useQuery({});
 
 	// Pagination state
 	const [currentPage, setCurrentPage] = useState(1);
@@ -87,7 +87,7 @@ const ProductsWrapper: FC = () => {
 		setCurrentPage(1);
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
-	if(isLoading) return <Loader2 className="animate-spin w-8 h-8" />
+	if (isLoading) return <Loader2 className="animate-spin w-8 h-8" />
 
 	return (
 		<SidebarProvider>
@@ -165,9 +165,9 @@ const ProductsWrapper: FC = () => {
 						{currentProducts.map((product) => (
 							<div key={product.id} className="border p-6 rounded-lg">
 								<div className="flex justify-center mb-4">
-									<Image 
+									<Image
 										src={product.imageUrl!}
-										alt={product.name 
+										alt={product.name
 
 										}
 										width={100}
@@ -183,9 +183,8 @@ const ProductsWrapper: FC = () => {
 
 					{/* Pagination */}
 					<PaginationControl
-						totalItems={filteredProducts.length}
-						itemsPerPage={productsPerPage}
 						currentPage={currentPage}
+						totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
 						onPageChange={handlePageChange}
 					/>
 				</div>
