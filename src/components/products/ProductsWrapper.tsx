@@ -34,7 +34,7 @@ const ProductsWrapper: FC = () => {
 	const [selectedPriceRange, setSelectedPriceRange] = useState("all");
 	const [sortBy, setSortBy] = useState("featured");
 
-	const { data, isLoading } = api.product.list.useQuery({});
+	const { data, isLoading, isError } = api.product.list.useQuery({});
 
 	// Pagination state
 	const [currentPage, setCurrentPage] = useState(1);
@@ -88,7 +88,7 @@ const ProductsWrapper: FC = () => {
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
 	if (isLoading) return <Loader2 className="animate-spin w-8 h-8" />
-
+	if (isError) return <div className="text-red-800 font-bold text-xl mt-4">Error fetching products</div>;
 	return (
 		<SidebarProvider>
 			<div className="flex min-h-screen w-full">
@@ -167,15 +167,13 @@ const ProductsWrapper: FC = () => {
 								<div className="flex justify-center mb-4">
 									<Image
 										src={product.imageUrl!}
-										alt={product.name
-
-										}
+										alt={product.name}
 										width={100}
 										height={100}
 									/>
 								</div>
 								<h2 className="text-xl font-semibold">{product.name}</h2>
-								<p className="text-gray-600">{product.description}</p>
+								<p className="text-gray-600 dark:text-blue-50">{product.description}</p>
 								<p className="text-lg font-bold mt-2">${product.price}</p>
 							</div>
 						))}

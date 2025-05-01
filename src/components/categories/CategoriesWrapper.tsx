@@ -14,6 +14,7 @@ import {
 	SelectValue,
 } from "../ui/select";
 import { api } from "~/trpc/react";
+import { Loader2 } from "lucide-react";
 
 
 const CategoriesWrapper = () => {
@@ -28,12 +29,12 @@ const CategoriesWrapper = () => {
 	});
 
 	// Handle loading and error states
-	if (isLoading) return <div>Loading...</div>;
+	if (isLoading) return <Loader2 className="animate-spin w-8 h-8" />
 	if (isError) return <div>Error fetching categories</div>;
 
 	const handlePageChange = (dir: "prev" | "next") => {
 		setCurrentPage((prev) =>
-			dir === "prev" ? Math.max(prev - 1, 1) : Math.min(prev + 1, totalPages)
+			dir === "prev" ? Math.max(prev - 1, 1) : Math.min(prev + 1)
 		);
 	};
 
@@ -84,7 +85,7 @@ const CategoriesWrapper = () => {
 			</div>
 
 			<div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
-				{paginated.map((category, index) => (
+				{data.categories && data.categories.map((category, index) => (
 					<motion.div
 						key={category.id}
 						initial={{ opacity: 0, y: 20 }}
