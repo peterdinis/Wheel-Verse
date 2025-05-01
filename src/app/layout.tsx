@@ -8,6 +8,7 @@ import ScrollToTopButton from "~/components/shared/ScrollToTopButton";
 import { ThemeProvider } from "~/components/shared/theme-provider";
 import { ToastProvider } from "~/components/ui/toast";
 import { TRPCReactProvider } from "~/trpc/react";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
 	title: "Wheel Verse",
@@ -33,12 +34,14 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
+						<SessionProvider>
 						<BaseLayout>
 							<ToastProvider>
 								{children}
 								<ScrollToTopButton />
 							</ToastProvider>
 						</BaseLayout>
+						</SessionProvider>
 					</ThemeProvider>
 				</TRPCReactProvider>
 			</body>
