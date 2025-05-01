@@ -4,12 +4,13 @@ import { motion } from "framer-motion";
 import { Loader2, LockKeyhole, Mail } from "lucide-react";
 import Link from "next/link";
 import { type FC } from "react";
-import { useForm } from "react-hook-form"; // Import react-hook-form
-import { signIn } from "next-auth/react"; // For logging in with NextAuth
+import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
 import { useToast } from "~/hooks/use-toast";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { useRouter } from "next/navigation";
 
 // Define the form data types
 interface LoginFormData {
@@ -20,7 +21,7 @@ interface LoginFormData {
 const LoginForm: FC = () => {
   const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginFormData>();
   const { toast } = useToast();
-  
+  const router = useRouter()
   const onSubmit = async (data: LoginFormData) => {
     const { email, password } = data;
 
@@ -44,6 +45,7 @@ const LoginForm: FC = () => {
           description: "Welcome back!",
 		  className: "bg-green-800 text-white font-bold text-xl"
         });
+		router.push("/profile");
       }
     } catch (error) {
       toast({
