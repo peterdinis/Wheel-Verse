@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Loader2, LockKeyhole, Mail } from "lucide-react";
 import Link from "next/link";
-import { FC } from "react";
+import { type FC } from "react";
 import { useForm } from "react-hook-form"; // Import react-hook-form
 import { signIn } from "next-auth/react"; // For logging in with NextAuth
 import { useToast } from "~/hooks/use-toast";
@@ -42,7 +42,7 @@ const LoginForm: FC = () => {
         toast({
           title: "Login successful!",
           description: "Welcome back!",
-          variant: "success",
+		  className: "bg-green-800 text-white font-bold text-xl"
         });
       }
     } catch (error) {
