@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, Search, ShoppingCart, X, User } from "lucide-react";
 import Link from "next/link";
-import { FC, useState } from "react";
+import { type FC, useState } from "react";
 import { Button } from "../ui/button";
 import { ModeToggle } from "./ModeToggle";
 import { useSession, signOut } from "next-auth/react";
