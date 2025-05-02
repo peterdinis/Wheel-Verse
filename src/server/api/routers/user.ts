@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "~/server/db"; // make sure this points to your actual Prisma instance
 import { createTRPCRouter, publicProcedure } from "../trpc";
