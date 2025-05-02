@@ -156,7 +156,7 @@ const LoginForm: FC = () => {
           </div>
 
           <div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full dark:text-white text-black">
               <Loader2 className="h-4 w-4 animate-spin mr-2 hidden" />
               Login
             </Button>
