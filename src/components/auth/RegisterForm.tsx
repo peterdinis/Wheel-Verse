@@ -127,7 +127,7 @@ export function RegisterForm() {
 									<FormMessage />
 								</FormItem>
 							)}
-						/>
+						/> 
 
 						<Button type="submit" className="w-full text-black dark:text-white">
 							Register
