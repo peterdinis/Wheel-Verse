@@ -64,7 +64,7 @@ const LoginForm: FC = () => {
   };
 
   return (
-    <div className="container flex min-h-[calc(100vh-12rem)] items-center justify-center">
+    <div className="container flex min-h-screen items-center justify-center">
       <motion.div
         className="w-full max-w-md space-y-8 rounded-xl border border-border bg-card p-8 shadow-lg"
         initial={{ opacity: 0, y: 20 }}
