@@ -1,10 +1,10 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Eye, EyeOff } from "lucide-react";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -114,7 +114,7 @@ export function RegisterForm() {
 										</FormControl>
 										<button
 											type="button"
-											className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+											className="-translate-y-1/2 absolute top-1/2 right-3 text-gray-500"
 											onClick={() => setShowPassword((prev) => !prev)}
 										>
 											{showPassword ? (
@@ -129,7 +129,7 @@ export function RegisterForm() {
 							)}
 						/>
 
-						<Button type="submit" className="w-full dark:text-white text-black">
+						<Button type="submit" className="w-full text-black dark:text-white">
 							Register
 						</Button>
 					</form>
