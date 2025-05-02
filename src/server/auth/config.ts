@@ -14,8 +14,8 @@ declare module "next-auth" {
 	interface Session extends DefaultSession {
 		user: {
 			id: string;
-			name?: string | null;
-			email?: string | null;
+			name: string | null;
+			email: string | null;
 		} & DefaultSession["user"];
 	}
 
@@ -39,7 +39,7 @@ export const authConfig: NextAuthConfig = {
 				password: { label: "Password", type: "password" },
 			},
 			async authorize(
-				credentials: Partial<Record<"email" | "password", string>> | undefined
+				credentials: any // TODO: Later better type for this
 			): Promise<Omit<PrismaUser, "password"> | null> {
 				// Check if credentials are available and valid
 				if (!credentials?.email || !credentials?.password) return null;
