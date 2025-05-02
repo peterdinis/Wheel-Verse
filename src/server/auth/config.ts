@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 import { db } from "~/server/db";
+import type { User as PrismaUser } from "@prisma/client"; // ✅ Correct import for PrismaUser
 
 /**
  * Module augmentation for `next-auth` types.
@@ -13,14 +14,22 @@ declare module "next-auth" {
 	interface Session extends DefaultSession {
 		user: {
 			id: string;
+			name?: string | null;
+			email?: string | null;
 		} & DefaultSession["user"];
+	}
+
+	interface User {
+		name?: string | null;
+		email?: string | null;
+		password?: string | null; // Only available server-side
 	}
 }
 
 /**
  * NextAuth configuration
  */
-export const authConfig = {
+export const authConfig: NextAuthConfig = {
 	providers: [
 		DiscordProvider,
 		CredentialsProvider({
@@ -29,38 +38,43 @@ export const authConfig = {
 				email: { label: "Email", type: "text" },
 				password: { label: "Password", type: "password" },
 			},
-			async authorize(credentials) {
+			async authorize(
+				credentials: Partial<Record<"email" | "password", string>> | undefined
+			): Promise<Omit<PrismaUser, "password"> | null> {
+				// Check if credentials are available and valid
 				if (!credentials?.email || !credentials?.password) return null;
 
+				// Fetch user from the database using email
 				const user = await db.user.findUnique({
 					where: { email: credentials.email },
 				});
 
+				// If no user or password is missing, return null
 				if (!user || !user.password) return null;
 
+				// Validate password using bcrypt
 				const isPasswordValid = await bcrypt.compare(
 					credentials.password,
-					user.password,
+					user.password
 				);
 
+				// If password is invalid, return null
 				if (!isPasswordValid) return null;
 
-				return {
-					id: user.id,
-					name: user.name,
-					email: user.email,
-				};
+				// Exclude password from the returned user object
+				const { password, ...userWithoutPassword } = user;
+				return userWithoutPassword;
 			},
 		}),
 	],
 	adapter: PrismaAdapter(db),
 	callbacks: {
-		session: ({ session, user }) => ({
-			...session,
-			user: {
-				...session.user,
-				id: user.id,
-			},
-		}),
+		async session({ session, user }) {
+			if (session.user) {
+				// Add user ID to the session object
+				session.user.id = user.id;
+			}
+			return session;
+		},
 	},
-} satisfies NextAuthConfig;
+};
