@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Eye, EyeOff } from "lucide-react";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -18,9 +19,9 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 const registerSchema = z.object({
-	name: z.string().min(1, "Meno je povinné"),
-	email: z.string().email("Neplatný email"),
-	password: z.string().min(6, "Heslo musí mať aspoň 6 znakov"),
+	name: z.string().min(1, "Name is required"),
+	email: z.string().email("Invalid email"),
+	password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type RegisterInput = z.infer<typeof registerSchema>;
@@ -36,6 +37,7 @@ export function RegisterForm() {
 	});
 
 	const [success, setSuccess] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const registerMutation = api.user.register.useMutation();
 
 	const onSubmit = async (data: RegisterInput) => {
@@ -45,7 +47,7 @@ export function RegisterForm() {
 			form.reset();
 		} catch (err: any) {
 			form.setError("email", {
-				message: err?.message || "Chyba pri registrácii.",
+				message: err?.message || "Registration error.",
 			});
 		}
 	};
@@ -53,12 +55,12 @@ export function RegisterForm() {
 	return (
 		<Card className="mx-auto mt-10 max-w-md rounded-2xl shadow-lg">
 			<CardHeader>
-				<CardTitle className="text-xl">Registrácia</CardTitle>
+				<CardTitle className="text-xl">Register</CardTitle>
 			</CardHeader>
 			<CardContent>
 				{success && (
 					<div className="mb-4 font-medium text-green-600">
-						Úspešne zaregistrovaný!
+						Successfully registered!
 					</div>
 				)}
 				<Form {...form}>
@@ -68,9 +70,9 @@ export function RegisterForm() {
 							name="name"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="name">Meno</Label>
+									<Label htmlFor="name">Name</Label>
 									<FormControl>
-										<Input id="name" placeholder="Zadaj meno" {...field} />
+										<Input id="name" placeholder="Enter your name" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -86,7 +88,7 @@ export function RegisterForm() {
 									<FormControl>
 										<Input
 											id="email"
-											placeholder="napr. janko@mail.sk"
+											placeholder="e.g. john@example.com"
 											{...field}
 										/>
 									</FormControl>
@@ -100,22 +102,35 @@ export function RegisterForm() {
 							name="password"
 							render={({ field }) => (
 								<FormItem>
-									<Label htmlFor="password">Heslo</Label>
-									<FormControl>
-										<Input
-											id="password"
-											type="password"
-											placeholder="••••••"
-											{...field}
-										/>
-									</FormControl>
+									<Label htmlFor="password">Password</Label>
+									<div className="relative">
+										<FormControl>
+											<Input
+												id="password"
+												type={showPassword ? "text" : "password"}
+												placeholder="••••••"
+												{...field}
+											/>
+										</FormControl>
+										<button
+											type="button"
+											className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+											onClick={() => setShowPassword((prev) => !prev)}
+										>
+											{showPassword ? (
+												<EyeOff className="h-5 w-5" />
+											) : (
+												<Eye className="h-5 w-5" />
+											)}
+										</button>
+									</div>
 									<FormMessage />
 								</FormItem>
 							)}
 						/>
 
-						<Button type="submit" className="w-full">
-							Registrovať
+						<Button type="submit" className="w-full dark:text-white text-black">
+							Register
 						</Button>
 					</form>
 				</Form>
