@@ -1,80 +1,79 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
-import type { DefaultSession, NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import { compare } from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-
+import type { DefaultSession, NextAuthConfig } from "next-auth";
 import { db } from "~/server/db";
-import type { User as PrismaUser } from "@prisma/client"; // ✅ Correct import for PrismaUser
+import type { User } from "@prisma/client";
 
-/**
- * Module augmentation for `next-auth` types.
- */
 declare module "next-auth" {
-	interface Session extends DefaultSession {
-		user: {
-			id: string;
-			name: string | null;
-			email: string | null;
-		} & DefaultSession["user"];
-	}
-
-	interface User {
-		name?: string | null;
-		email?: string | null;
-		password?: string | null; // Only available server-side
-	}
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+      status: string;
+    } & DefaultSession["user"];
+  }
+  interface CustomerUser extends User {}
 }
 
-/**
- * NextAuth configuration
- */
-export const authConfig: NextAuthConfig = {
-	providers: [
-		DiscordProvider,
-		CredentialsProvider({
-			name: "Credentials",
-			credentials: {
-				email: { label: "Email", type: "text" },
-				password: { label: "Password", type: "password" },
-			},
-			async authorize(
-				credentials: any // TODO: Later better type for this
-			): Promise<Omit<PrismaUser, "password"> | null> {
-				// Check if credentials are available and valid
-				if (!credentials?.email || !credentials?.password) return null;
+export const authConfig = {
+  session: {
+    strategy: "jwt",
+  },
+  providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials: any) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Chýba email alebo heslo.");
+        }
 
-				// Fetch user from the database using email
-				const user = await db.user.findUnique({
-					where: { email: credentials.email },
-				});
+        const user = await db.user.findUnique({
+          where: { email: credentials.email },
+        });
 
-				// If no user or password is missing, return null
-				if (!user || !user.password) return null;
+        if (!user) {
+          throw new Error("Používateľ neexistuje.");
+        }
 
-				// Validate password using bcrypt
-				const isPasswordValid = await bcrypt.compare(
-					credentials.password,
-					user.password
-				);
+        const isPasswordValid = await compare(
+          credentials.password,
+          user.password,
+        );
+        if (!isPasswordValid) {
+          throw new Error("Nesprávne heslo.");
+        }
 
-				// If password is invalid, return null
-				if (!isPasswordValid) return null;
+        return {
+          id: user.id,
+          email: user.email,
+        };
+      },
+    }),
+  ],
+  trustHost: true,
+  secret: process.env.AUTH_SECRET,
+  pages: {
+    signIn: "/sign-in",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+      }
 
-				// Exclude password from the returned user object
-				const { password, ...userWithoutPassword } = user;
-				return userWithoutPassword;
-			},
-		}),
-	],
-	adapter: PrismaAdapter(db),
-	callbacks: {
-		async session({ session, user }) {
-			if (session.user) {
-				// Add user ID to the session object
-				session.user.id = user.id;
-			}
-			return session;
-		},
-	},
-};
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.name = token.name as string;
+      }
+
+      return session;
+    },
+  },
+} satisfies NextAuthConfig;
