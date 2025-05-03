@@ -130,7 +130,7 @@ export const cartRouter = createTRPCRouter({
 				});
 			}
 		}),
-		
+
 	decrementQuantity: protectedProcedure
 		.input(
 			z.object({
