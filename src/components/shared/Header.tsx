@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { Menu, Search, ShoppingCart, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { type FC, useState } from "react";
@@ -61,20 +61,6 @@ const Header: FC = () => {
 						Categories
 					</Link>
 
-					<Button
-						variant="ghost"
-						size="icon"
-						className="md:hidden"
-						onClick={toggleMenu}
-						aria-label="Menu"
-					>
-						{isMenuOpen ? (
-							<X className="h-5 w-5" />
-						) : (
-							<Menu className="h-5 w-5" />
-						)}
-					</Button>
-
 					{session ? (
 						<DropdownMenu>
 							<DropdownMenuTrigger>
@@ -95,14 +81,12 @@ const Header: FC = () => {
 							</DropdownMenuContent>
 						</DropdownMenu>
 					) : (
-						<Button
-							variant="ghost"
-							size="icon"
-							className="md:hidden"
-							aria-label="Login"
+						<Link
+							href="/login"
+							className="font-medium transition-colors hover:text-primary"
 						>
-							<Link href="/login">Login</Link>
-						</Button>
+							Login
+						</Link>
 					)}
 				</nav>
 
@@ -130,6 +114,16 @@ const Header: FC = () => {
 							</span>
 						</Button>
 					</Link>
+
+					<Button
+						variant="ghost"
+						size="icon"
+						className="md:hidden"
+						onClick={toggleMenu}
+						aria-label="Menu"
+					>
+						{isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+					</Button>
 
 					<ModeToggle />
 				</div>
@@ -168,21 +162,35 @@ const Header: FC = () => {
 								Categories
 							</Link>
 
-							<Link
-								href="/register"
-								className="font-medium transition-colors hover:text-primary"
-								onClick={() => setIsMenuOpen(false)}
-							>
-								Register
-							</Link>
-
-							<Link
-								href="/login"
-								className="font-medium transition-colors hover:text-primary"
-								onClick={() => setIsMenuOpen(false)}
-							>
-								Login
-							</Link>
+							{session ? (
+								<Button
+									variant="ghost"
+									onClick={() => {
+										handleLogout();
+										setIsMenuOpen(false);
+									}}
+									className="justify-start font-medium"
+								>
+									Logout
+								</Button>
+							) : (
+								<>
+									<Link
+										href="/register"
+										className="font-medium transition-colors hover:text-primary"
+										onClick={() => setIsMenuOpen(false)}
+									>
+										Register
+									</Link>
+									<Link
+										href="/login"
+										className="font-medium transition-colors hover:text-primary"
+										onClick={() => setIsMenuOpen(false)}
+									>
+										Login
+									</Link>
+								</>
+							)}
 						</nav>
 					</motion.div>
 				)}

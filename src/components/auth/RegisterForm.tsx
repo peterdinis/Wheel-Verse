@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -127,11 +128,15 @@ export function RegisterForm() {
 									<FormMessage />
 								</FormItem>
 							)}
-						/> 
+						/>
 
 						<Button type="submit" className="w-full text-black dark:text-white">
 							Register
 						</Button>
+
+						<Link href="/login" className="text-sky-600">
+							Already have an account Login here
+						</Link>
 					</form>
 				</Form>
 			</CardContent>
