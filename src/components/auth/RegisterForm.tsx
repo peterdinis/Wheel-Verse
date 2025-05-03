@@ -17,6 +17,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import Link from "next/link";
 
 const registerSchema = z.object({
 	name: z.string().min(1, "Name is required"),
@@ -132,6 +133,10 @@ export function RegisterForm() {
 						<Button type="submit" className="w-full text-black dark:text-white">
 							Register
 						</Button>
+
+						<Link href="/login" className="text-sky-600">
+							Already have an account Login here
+						</Link>
 					</form>
 				</Form>
 			</CardContent>
