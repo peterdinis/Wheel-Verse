@@ -122,7 +122,11 @@ const Header: FC = () => {
 						onClick={toggleMenu}
 						aria-label="Menu"
 					>
-						{isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+						{isMenuOpen ? (
+							<X className="h-5 w-5" />
+						) : (
+							<Menu className="h-5 w-5" />
+						)}
 					</Button>
 
 					<ModeToggle />
