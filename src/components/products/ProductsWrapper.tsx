@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Search, X } from "lucide-react";
+import { Ghost, Loader2, Search, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { type FC, useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { Input } from "../ui/input";
@@ -42,18 +43,15 @@ const ProductsWrapper: FC = () => {
 
 	// Get current price range
 	const currentPriceRange =
-		priceRanges.find((range) => range.id === selectedPriceRange) ||
-		priceRanges[0];
+		priceRanges.find((range) => range.id === selectedPriceRange) || priceRanges[0];
 
-	// Filter products based on search and filters
+	// Filter products based on search, category, and price
 	const filteredProducts =
 		data?.products.filter((product) => {
-			// Filter by search query
 			const matchesSearch =
 				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				product.description!.toLowerCase().includes(searchQuery.toLowerCase());
 
-			// Filter by price range
 			const matchesPrice =
 				product.price >= currentPriceRange!.min &&
 				product.price <= currentPriceRange!.max;
@@ -65,19 +63,14 @@ const ProductsWrapper: FC = () => {
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
 		if (sortBy === "price-asc") return a.price - b.price;
 		if (sortBy === "price-desc") return b.price - a.price;
-		// Default: featured
-		return 0;
+		return 0; // Default: featured
 	});
 
 	// Get current page products
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-	const currentProducts = sortedProducts.slice(
-		indexOfFirstProduct,
-		indexOfLastProduct,
-	);
+	const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
-	// Change page
 	const handlePageChange = (pageNumber: number) => {
 		setCurrentPage(pageNumber);
 		window.scrollTo(0, 0);
@@ -88,13 +81,16 @@ const ProductsWrapper: FC = () => {
 		setCurrentPage(1);
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
-	if (isLoading) return <Loader2 className="h-8 w-8 animate-spin" />;
+	if (isLoading)
+		return <Loader2 className="h-8 w-8 animate-spin mx-auto mt-20" />;
+
 	if (isError)
 		return (
-			<div className="mt-4 font-bold text-red-800 text-xl">
+			<div className="mt-4 font-bold text-red-800 text-xl text-center">
 				Error fetching products
 			</div>
 		);
+
 	return (
 		<SidebarProvider>
 			<div className="flex min-h-screen w-full">
@@ -120,6 +116,7 @@ const ProductsWrapper: FC = () => {
 						<SidebarTrigger />
 					</div>
 
+					{/* Search */}
 					<motion.div
 						className="relative max-w-md flex-grow"
 						initial={false}
@@ -154,34 +151,53 @@ const ProductsWrapper: FC = () => {
 						</AnimatePresence>
 					</motion.div>
 
-
 					{/* Product List */}
-					<div className="grid grid-cols-1 mt-8  gap-8 sm:grid-cols-2 lg:grid-cols-3">
-						{currentProducts.map((product) => (
-							<div key={product.id} className="rounded-lg border p-6">
-								<div className="mb-4 flex justify-center">
-									<Image
-										src={product.imageUrl!}
-										alt={product.name}
-										width={100}
-										height={100}
-									/>
+					{currentProducts.length === 0 ? (
+						<div className="flex flex-col items-center justify-center mt-20 text-center text-muted-foreground">
+							<Ghost className="h-16 w-16 mb-4 text-gray-400 animate-bounce" />
+							<h3 className="text-2xl font-semibold">No bikes found</h3>
+							<p className="mt-2 text-gray-500">
+								Try adjusting your search or filters to find something else.
+							</p>
+						</div>
+					) : (
+						<div className="grid grid-cols-1 mt-8 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+							{currentProducts.map((product) => (
+								<div key={product.id} className="rounded-lg border p-6 flex flex-col justify-between">
+									<div>
+										<div className="mb-4 flex justify-center">
+											<Image
+												src={product.imageUrl!}
+												alt={product.name}
+												width={100}
+												height={100}
+											/>
+										</div>
+										<h2 className="font-semibold text-xl">{product.name}</h2>
+										<p className="text-gray-600 dark:text-blue-50">
+											{product.description}
+										</p>
+										<p className="mt-2 font-bold text-lg">${product.price}</p>
+									</div>
+									<Link
+										href={`/products/${product.id}`}
+										className="mt-4 inline-block text-center rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 transition"
+									>
+										View Details
+									</Link>
 								</div>
-								<h2 className="font-semibold text-xl">{product.name}</h2>
-								<p className="text-gray-600 dark:text-blue-50">
-									{product.description}
-								</p>
-								<p className="mt-2 font-bold text-lg">${product.price}</p>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
 
 					{/* Pagination */}
-					<PaginationControl
-						currentPage={currentPage}
-						totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
-						onPageChange={handlePageChange}
-					/>
+					{sortedProducts.length > 0 && (
+						<PaginationControl
+							currentPage={currentPage}
+							totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
+							onPageChange={handlePageChange}
+						/>
+					)}
 				</div>
 			</div>
 		</SidebarProvider>
