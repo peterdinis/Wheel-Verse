@@ -1,23 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Loader2, Search, X } from "lucide-react";
+import { Ghost, Loader2, Search, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { type FC, useEffect, useState } from "react";
 import { api } from "~/trpc/react";
 import { Input } from "../ui/input";
 import { SidebarProvider, SidebarTrigger } from "../ui/sidebar";
 import { PaginationControl } from "./PaginationControl";
 import { ProductsSidebar } from "./ProductSidebar";
-
-// Filter options
-const categories = [
-	{ id: "all", name: "All Bikes" },
-	{ id: "mountain", name: "Mountain Bikes" },
-	{ id: "road", name: "Road Bikes" },
-	{ id: "electric", name: "Electric Bikes" },
-	{ id: "urban", name: "Urban Bikes" },
-];
 
 // Price range options
 const priceRanges = [
@@ -36,24 +28,25 @@ const ProductsWrapper: FC = () => {
 
 	const { data, isLoading, isError } = api.product.list.useQuery({});
 
-	// Pagination state
+	const categories = [
+		{ id: String(Math.random()), name: "All Categories" },
+		...Array.from(
+			new Set(data?.products.map((p) => p.category).filter(Boolean))
+		).map((cat) => ({ id: cat!, name: cat! }))
+	];
+
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 6;
 
-	// Get current price range
 	const currentPriceRange =
-		priceRanges.find((range) => range.id === selectedPriceRange) ||
-		priceRanges[0];
+		priceRanges.find((range) => range.id === selectedPriceRange) || priceRanges[0];
 
-	// Filter products based on search and filters
 	const filteredProducts =
 		data?.products.filter((product) => {
-			// Filter by search query
 			const matchesSearch =
 				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				product.description!.toLowerCase().includes(searchQuery.toLowerCase());
+				product.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-			// Filter by price range
 			const matchesPrice =
 				product.price >= currentPriceRange!.min &&
 				product.price <= currentPriceRange!.max;
@@ -61,40 +54,35 @@ const ProductsWrapper: FC = () => {
 			return matchesSearch && matchesPrice;
 		}) || [];
 
-	// Sort products
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
 		if (sortBy === "price-asc") return a.price - b.price;
 		if (sortBy === "price-desc") return b.price - a.price;
-		// Default: featured
 		return 0;
 	});
 
-	// Get current page products
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-	const currentProducts = sortedProducts.slice(
-		indexOfFirstProduct,
-		indexOfLastProduct,
-	);
+	const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
-	// Change page
 	const handlePageChange = (pageNumber: number) => {
 		setCurrentPage(pageNumber);
 		window.scrollTo(0, 0);
 	};
 
-	// Reset pagination when filters change
 	useEffect(() => {
 		setCurrentPage(1);
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
-	if (isLoading) return <Loader2 className="h-8 w-8 animate-spin" />;
+	if (isLoading)
+		return <Loader2 className="h-8 w-8 animate-spin mx-auto mt-20" />;
+
 	if (isError)
 		return (
-			<div className="mt-4 font-bold text-red-800 text-xl">
+			<div className="mt-4 font-bold text-red-800 text-xl text-center">
 				Error fetching products
 			</div>
 		);
+
 	return (
 		<SidebarProvider>
 			<div className="flex min-h-screen w-full">
@@ -103,7 +91,7 @@ const ProductsWrapper: FC = () => {
 					setSelectedCategory={setSelectedCategory}
 					selectedPriceRange={selectedPriceRange}
 					setSelectedPriceRange={setSelectedPriceRange}
-					categories={categories}
+					categories={categories as any}
 					priceRanges={priceRanges}
 				/>
 
@@ -113,86 +101,91 @@ const ProductsWrapper: FC = () => {
 							<h1 className="mb-4 font-bold text-3xl md:text-4xl">
 								Our Bikes Collection
 							</h1>
-							<p className="text-gray-600 text-lg">
+							<p className="text-gray-600 dark:text-sky-100 text-lg">
 								Find the perfect bike for your adventures
 							</p>
 						</div>
 						<SidebarTrigger />
 					</div>
 
-					{/* Search and Sort Controls */}
-					<div className="mb-8 flex flex-col justify-between gap-4 md:flex-row">
-						<motion.div
-							className="relative max-w-md flex-grow"
-							initial={false}
-							animate={{ scale: searchQuery ? 1.02 : 1 }}
-							transition={{ duration: 0.2 }}
-						>
-							<Input
-								type="text"
-								placeholder="Search bikes..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className="w-full rounded-md border bg-background p-3 pl-10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
-							/>
-							<Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-muted-foreground" />
-							<AnimatePresence>
-								{searchQuery && (
-									<motion.button
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										exit={{ opacity: 0, scale: 0.8 }}
-										onClick={() => setSearchQuery("")}
-										className="-translate-y-1/2 absolute top-1/2 right-3 transform"
-									>
-										<X className="h-4 w-4 text-muted-foreground transition-colors hover:text-foreground" />
-									</motion.button>
-								)}
-							</AnimatePresence>
-						</motion.div>
-
-						{/* Sort Dropdown */}
-						<div className="relative">
-							<select
-								value={sortBy}
-								onChange={(e) => setSortBy(e.target.value)}
-								className="appearance-none rounded-md border bg-background p-3 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-							>
-								<option value="featured">Featured</option>
-								<option value="price-asc">Price: Low to High</option>
-								<option value="price-desc">Price: High to Low</option>
-								<option value="rating">Rating</option>
-							</select>
-						</div>
-					</div>
+					{/* Search */}
+					<motion.div
+						className="relative max-w-md flex-grow"
+						initial={false}
+						animate={{ scale: searchQuery ? 1.02 : 1 }}
+						transition={{ duration: 0.2 }}
+					>
+						<Input
+							type="text"
+							placeholder="Search bikes..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="w-full rounded-full border border-border bg-background p-3 pl-10 pr-10 text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+						/>
+						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+						<AnimatePresence>
+							{searchQuery && (
+								<motion.button
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
+									onClick={() => setSearchQuery("")}
+									className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+									aria-label="Clear search"
+								>
+									<X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+								</motion.button>
+							)}
+						</AnimatePresence>
+					</motion.div>
 
 					{/* Product List */}
-					<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-						{currentProducts.map((product) => (
-							<div key={product.id} className="rounded-lg border p-6">
-								<div className="mb-4 flex justify-center">
-									<Image
-										src={product.imageUrl!}
-										alt={product.name}
-										width={100}
-										height={100}
-									/>
+					{currentProducts.length === 0 ? (
+						<div className="flex flex-col items-center justify-center mt-20 text-center text-muted-foreground">
+							<Ghost className="h-16 w-16 mb-4 text-gray-400 animate-bounce" />
+							<h3 className="text-2xl font-semibold">No bikes found</h3>
+							<p className="mt-2 text-gray-500">
+								Try adjusting your search or filters to find something else.
+							</p>
+						</div>
+					) : (
+						<div className="grid grid-cols-1 mt-8 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+							{currentProducts.map((product) => (
+								<div key={product.id} className="rounded-lg border p-6 flex flex-col justify-between">
+									<div>
+										<div className="mb-4 flex justify-center">
+											<Image
+												src={product.imageUrl!}
+												alt={product.name}
+												width={100}
+												height={100}
+											/>
+										</div>
+										<h2 className="font-semibold text-xl">{product.name}</h2>
+										<p className="text-gray-600 dark:text-blue-50">
+											{product.description}
+										</p>
+										<p className="mt-2 font-bold text-lg">${product.price}</p>
+									</div>
+									<Link
+										href={`/products/${product.id}`}
+										className="mt-4 inline-block text-center rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 transition"
+									>
+										View Details
+									</Link>
 								</div>
-								<h2 className="font-semibold text-xl">{product.name}</h2>
-								<p className="text-gray-600 dark:text-blue-50">
-									{product.description}
-								</p>
-								<p className="mt-2 font-bold text-lg">${product.price}</p>
-							</div>
-						))}
-					</div>
+							))}
+						</div>
+					)}
 
 					{/* Pagination */}
-					<PaginationControl
-						currentPage={currentPage}
-						totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
-						onPageChange={handlePageChange}
-					/>
+					{sortedProducts.length > 0 && (
+						<PaginationControl
+							currentPage={currentPage}
+							totalPages={Math.ceil(sortedProducts.length / productsPerPage)}
+							onPageChange={handlePageChange}
+						/>
+					)}
 				</div>
 			</div>
 		</SidebarProvider>
