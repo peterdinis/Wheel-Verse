@@ -27,12 +27,11 @@ const ProductsWrapper: FC = () => {
 	const [sortBy, setSortBy] = useState("featured");
 
 	const { data, isLoading, isError } = api.product.list.useQuery({});
-
 	const categories = [
-		{ id: String(Math.random()), name: "All Categories" },
+		{ id: "all", name: "All Categories" },
 		...Array.from(
 			new Set(data?.products.map((p) => p.category).filter(Boolean))
-		).map((cat) => ({ id: cat!, name: cat! }))
+		).map((cat) => ({ id: cat!, name: cat! })),
 	];
 
 	const [currentPage, setCurrentPage] = useState(1);
@@ -47,11 +46,14 @@ const ProductsWrapper: FC = () => {
 				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				product.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
+			const matchesCategory =
+				selectedCategory === "all" || product.category! === selectedCategory;
+
 			const matchesPrice =
 				product.price >= currentPriceRange!.min &&
 				product.price <= currentPriceRange!.max;
 
-			return matchesSearch && matchesPrice;
+			return matchesSearch && matchesCategory && matchesPrice;
 		}) || [];
 
 	const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -91,7 +93,7 @@ const ProductsWrapper: FC = () => {
 					setSelectedCategory={setSelectedCategory}
 					selectedPriceRange={selectedPriceRange}
 					setSelectedPriceRange={setSelectedPriceRange}
-					categories={categories as any}
+					categories={categories}
 					priceRanges={priceRanges}
 				/>
 
