@@ -113,61 +113,50 @@ const ProductsWrapper: FC = () => {
 							<h1 className="mb-4 font-bold text-3xl md:text-4xl">
 								Our Bikes Collection
 							</h1>
-							<p className="text-gray-600 text-lg">
+							<p className="text-gray-600 dark:text-sky-100 text-lg">
 								Find the perfect bike for your adventures
 							</p>
 						</div>
 						<SidebarTrigger />
 					</div>
 
-					{/* Search and Sort Controls */}
-					<div className="mb-8 flex flex-col justify-between gap-4 md:flex-row">
-						<motion.div
-							className="relative max-w-md flex-grow"
-							initial={false}
-							animate={{ scale: searchQuery ? 1.02 : 1 }}
-							transition={{ duration: 0.2 }}
-						>
-							<Input
-								type="text"
-								placeholder="Search bikes..."
-								value={searchQuery}
-								onChange={(e) => setSearchQuery(e.target.value)}
-								className="w-full rounded-md border bg-background p-3 pl-10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary"
-							/>
-							<Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-muted-foreground" />
-							<AnimatePresence>
-								{searchQuery && (
-									<motion.button
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										exit={{ opacity: 0, scale: 0.8 }}
-										onClick={() => setSearchQuery("")}
-										className="-translate-y-1/2 absolute top-1/2 right-3 transform"
-									>
-										<X className="h-4 w-4 text-muted-foreground transition-colors hover:text-foreground" />
-									</motion.button>
-								)}
-							</AnimatePresence>
-						</motion.div>
+					<motion.div
+						className="relative max-w-md flex-grow"
+						initial={false}
+						animate={{ scale: searchQuery ? 1.02 : 1 }}
+						transition={{ duration: 0.2 }}
+					>
+						<Input
+							type="text"
+							placeholder="Search bikes..."
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="w-full rounded-full border border-border bg-background p-3 pl-10 pr-10 text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+						/>
 
-						{/* Sort Dropdown */}
-						<div className="relative">
-							<select
-								value={sortBy}
-								onChange={(e) => setSortBy(e.target.value)}
-								className="appearance-none rounded-md border bg-background p-3 pr-10 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-							>
-								<option value="featured">Featured</option>
-								<option value="price-asc">Price: Low to High</option>
-								<option value="price-desc">Price: High to Low</option>
-								<option value="rating">Rating</option>
-							</select>
-						</div>
-					</div>
+						{/* Search icon */}
+						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+
+						{/* Clear button */}
+						<AnimatePresence>
+							{searchQuery && (
+								<motion.button
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									exit={{ opacity: 0, scale: 0.8 }}
+									onClick={() => setSearchQuery("")}
+									className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+									aria-label="Clear search"
+								>
+									<X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+								</motion.button>
+							)}
+						</AnimatePresence>
+					</motion.div>
+
 
 					{/* Product List */}
-					<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+					<div className="grid grid-cols-1 mt-8  gap-8 sm:grid-cols-2 lg:grid-cols-3">
 						{currentProducts.map((product) => (
 							<div key={product.id} className="rounded-lg border p-6">
 								<div className="mb-4 flex justify-center">
