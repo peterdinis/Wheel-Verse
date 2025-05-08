@@ -5,7 +5,7 @@ import { Eye, EyeOff, Loader2, LockKeyhole, Mail } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FC, useState } from "react";
+import { type FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useToast } from "~/hooks/use-toast";
 import { Button } from "../ui/button";
