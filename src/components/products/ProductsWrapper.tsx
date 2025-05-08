@@ -30,9 +30,12 @@ const ProductsWrapper: FC = () => {
 	const categories = [
 		{ id: "all", name: "All Categories" },
 		...Array.from(
-			new Set(data?.products.map((p) => p.category).filter(Boolean))
-		).map((cat) => ({ id: cat!, name: cat! })),
-	];
+		  new Set(data?.products.map((p) => p.category).filter(Boolean))
+		).map((cat) => ({
+		  id: cat!.id,
+		  name: cat!.name,
+		})),
+	  ];
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 6;
@@ -46,8 +49,8 @@ const ProductsWrapper: FC = () => {
 				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				product.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-			const matchesCategory =
-				selectedCategory === "all" || product.category! === selectedCategory;
+				const matchesCategory =
+				selectedCategory === "all" || product.category?.id === selectedCategory;
 
 			const matchesPrice =
 				product.price >= currentPriceRange!.min &&
