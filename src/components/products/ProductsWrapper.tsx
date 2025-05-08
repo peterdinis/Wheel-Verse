@@ -30,10 +30,15 @@ const ProductsWrapper: FC = () => {
 	const categories = [
 		{ id: "all", name: "All Categories" },
 		...Array.from(
-		  new Set(data?.products.map((p) => p.category).filter(Boolean))
+		  new Map(
+			data?.products
+			  .map((p) => p.category)
+			  .filter((c): c is NonNullable<typeof c> => !!c)
+			  .map((c) => [c.id, c])
+		  ).values()
 		).map((cat) => ({
-		  id: cat!.id,
-		  name: cat!.name,
+		  id: cat.id,
+		  name: `${cat.name}-${cat.id.slice(0, 4)}`, 
 		})),
 	  ];
 
