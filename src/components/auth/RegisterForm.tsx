@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -38,18 +38,31 @@ export function RegisterForm() {
 	});
 
 	const [success, setSuccess] = useState(false);
+	const [formError, setFormError] = useState<string | null>(null);
 	const [showPassword, setShowPassword] = useState(false);
 	const registerMutation = api.user.register.useMutation();
 
 	const onSubmit = async (data: RegisterInput) => {
+		setFormError(null);
+		setSuccess(false);
+
 		try {
 			await registerMutation.mutateAsync(data);
 			setSuccess(true);
 			form.reset();
 		} catch (err: any) {
-			form.setError("email", {
-				message: err?.message || "Registration error.",
-			});
+			const message = err?.message || "Something went wrong during registration.";
+
+			// Try to extract field-level errors
+			if (err?.fieldErrors) {
+				Object.entries(err.fieldErrors).forEach(([key, value]) => {
+					form.setError(key as keyof RegisterInput, {
+						message: Array.isArray(value) ? value[0] : value,
+					});
+				});
+			} else {
+				setFormError(message);
+			}
 		}
 	};
 
@@ -64,6 +77,11 @@ export function RegisterForm() {
 						Successfully registered!
 					</div>
 				)}
+
+				{formError && (
+					<div className="mb-4 font-medium text-red-600">{formError}</div>
+				)}
+
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 						<FormField
@@ -130,12 +148,17 @@ export function RegisterForm() {
 							)}
 						/>
 
-						<Button type="submit" className="w-full text-black dark:text-white">
-							Register
+						<Button
+							type="submit"
+							className="w-full text-black dark:text-white"
+							disabled={registerMutation.isPending}
+						>
+							{registerMutation.isPending ? 
+							<Loader2 className="animate-spin w-8 h-8" /> : "Register"}
 						</Button>
 
 						<Link href="/login" className="text-sky-600">
-							Already have an account Login here
+							Already have an account? Login here
 						</Link>
 					</form>
 				</Form>
