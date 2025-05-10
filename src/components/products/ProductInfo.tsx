@@ -21,16 +21,24 @@ export const ProductInfo = () => {
 	const [product, setProduct] = useState(null);
 	const [selectedColor, setSelectedColor] = useState<string>("");
 	const [selectedSize, setSelectedSize] = useState<string>("");
+	const [relatedProducts, setRelatedProducts] = useState<any[]>([]); // New state for related products
 
+	// Fetch product data
 	const { data, isLoading, isError } = api.product.getById.useQuery(
 		{ id: productId },
 	);
+
+	// Fetch related products (assuming you have an API for this)
+	const { data: relatedData } = api.product.getById.useQuery({ id: productId });
 
 	useEffect(() => {
 		if (data) {
 			setProduct(data);
 		}
-	}, [data]);
+		if (relatedData) {
+			setRelatedProducts(relatedData);
+		}
+	}, [data, relatedData]);
 
 	if (isLoading) {
 		return <div>Loading...</div>;
@@ -100,48 +108,6 @@ export const ProductInfo = () => {
 						<p className="mb-4 text-muted-foreground">{product.description}</p>
 					</div>
 
-					{/* Color Selection */}
-					<div className="mb-6">
-						<h3 className="mb-3 font-semibold text-lg">
-							Color: {selectedColor}
-						</h3>
-						<div className="flex gap-3">
-							{product.colors.map((color) => (
-								<button
-									key={color.name}
-									className={`h-10 w-10 rounded-full border-2 ${
-										color.value === selectedColor
-											? "border-primary ring-2 ring-primary/30"
-											: "border-gray-300"
-									} focus:outline-none`}
-									style={{ backgroundColor: color.value }}
-									aria-label={`Select ${color.name} color`}
-									onClick={() => handleColorSelect(color)}
-								/>
-							))}
-						</div>
-					</div>
-
-					{/* Size Selection */}
-					<div className="mb-8">
-						<h3 className="mb-3 font-semibold text-lg">Size: {selectedSize}</h3>
-						<div className="flex flex-wrap gap-3">
-							{product.sizes.map((size) => (
-								<button
-									key={size}
-									className={`h-10 rounded-md border px-3 ${
-										size === selectedSize
-											? "border-primary bg-primary/10 text-primary"
-											: "border-gray-300 hover:border-primary"
-									} focus:outline-none focus:ring-2 focus:ring-primary`}
-									onClick={() => setSelectedSize(size)}
-								>
-									{size}
-								</button>
-							))}
-						</div>
-					</div>
-
 					{/* Add to Cart */}
 					<div className="mb-8 flex flex-col gap-4 sm:flex-row">
 						<Button size="lg" className="flex-grow">
@@ -182,21 +148,6 @@ export const ProductInfo = () => {
 				</motion.div>
 			</div>
 
-			{/* Product Specs */}
-			<div className="mt-16">
-				<h2 className="mb-6 font-bold text-2xl">Specifications</h2>
-				<div className="rounded-xl bg-muted p-6">
-					<ul className="space-y-3">
-						{product.specs.map((spec, index) => (
-							<li key={index} className="flex items-center">
-								<div className="mr-3 h-2 w-2 rounded-full bg-primary"></div>
-								{spec}
-							</li>
-						))}
-					</ul>
-				</div>
-			</div>
-
 			{/* Reviews Section */}
 			<Reviews productId={Number(productId)} />
 
@@ -204,40 +155,40 @@ export const ProductInfo = () => {
 			<div className="mt-16">
 				<h2 className="mb-6 font-bold text-2xl">You May Also Like</h2>
 				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{products
-						.filter((p) => p.id !== product.id)
-						.map((relatedProduct) => (
-							<motion.div
-								key={relatedProduct.id}
-								className="overflow-hidden rounded-xl bg-card shadow-sm transition-shadow hover:shadow-md"
-								whileHover={{ y: -5 }}
-							>
-								<Link href={`/products/${relatedProduct.id}`}>
-									<div
-										className={`flex h-48 items-center justify-center p-6 ${
-											relatedProduct.category === "mountain"
-												? "bg-blue-100 dark:bg-blue-900/30"
-												: relatedProduct.category === "road"
-													? "bg-green-100 dark:bg-green-900/30"
-													: relatedProduct.category === "electric"
-														? "bg-purple-100 dark:bg-purple-900/30"
-														: "bg-yellow-100 dark:bg-yellow-900/30"
-										}`}
-									>
-										<span className="text-5xl">{relatedProduct.image}</span>
-									</div>
-									<div className="p-4">
-										<h3 className="text-lg font-medium">{relatedProduct.name}</h3>
-										<p className="text-sm text-muted-foreground">
-											{relatedProduct.category} Bike
-										</p>
-										<p className="text-xl font-bold">${relatedProduct.price}</p>
-									</div>
-								</Link>
-							</motion.div>
-						))}
+					{relatedProducts.map((relatedProduct) => (
+						<motion.div
+							key={relatedProduct.id}
+							className="overflow-hidden rounded-xl bg-card shadow-sm transition-shadow hover:shadow-md"
+							whileHover={{ y: -5 }}
+						>
+							<Link href={`/products/${relatedProduct.id}`}>
+								<div
+									className={`flex h-48 items-center justify-center p-6 ${
+										relatedProduct.category === "mountain"
+											? "bg-blue-100 dark:bg-blue-900/30"
+											: relatedProduct.category === "road"
+												? "bg-green-100 dark:bg-green-900/30"
+												: relatedProduct.category === "electric"
+													? "bg-purple-100 dark:bg-purple-900/30"
+													: "bg-yellow-100 dark:bg-yellow-900/30"
+									}`}
+								>
+									<span className="text-5xl">{relatedProduct.image}</span>
+								</div>
+								<div className="p-4">
+									<h3 className="text-lg font-medium">{relatedProduct.name}</h3>
+									<p className="text-sm text-muted-foreground">
+										{relatedProduct.category} Bike
+									</p>
+									<p className="text-xl font-bold">${relatedProduct.price}</p>
+								</div>
+							</Link>
+						</motion.div>
+					))}
 				</div>
 			</div>
 		</div>
 	);
 };
+
+export default ProductInfo;
