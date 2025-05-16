@@ -13,10 +13,7 @@ async function main() {
 			Array.from({ length: 5 }).map(() =>
 				prisma.category.create({
 					data: {
-						name:
-							faker.commerce.department() +
-							"-" +
-							faker.string.uuid().slice(0, 5),
+						name: faker.commerce.department() + "-" + faker.string.uuid().slice(0, 5),
 						description: faker.lorem.sentence(),
 					},
 				}),
@@ -45,18 +42,33 @@ async function main() {
 
 		// Seed Products
 		const products = await Promise.all(
-			Array.from({ length: 10 }).map(() => {
+			Array.from({ length: 20 }).map(() => {
 				const category = faker.helpers.arrayElement(categories);
+				const name = faker.commerce.productName();
 				return prisma.product.create({
 					data: {
-						name: faker.commerce.productName(),
+						name,
+						slug: faker.helpers.slugify(name.toLowerCase()),
 						description: faker.commerce.productDescription(),
-						price: Number.parseFloat(
-							faker.commerce.price({ min: 10, max: 1000 }),
+						price: parseFloat(faker.commerce.price({ min: 10, max: 1000 })),
+						discount: faker.number.float({ min: 0, max: 30, precision: 0.1 }),
+						stock: faker.number.int({ min: 0, max: 100 }),
+						sku: faker.string.alphanumeric({ length: 8, casing: 'upper' }),
+						imageUrl: faker.image.urlLoremFlickr({ category: 'product' }),
+						gallery: Array.from({ length: 3 }).map(() =>
+							faker.image.urlLoremFlickr({ category: 'product' }),
 						),
-						imageUrl: faker.image.url(),
-						categoryId: category.id,
+						isAvaiable: faker.datatype.boolean(),
 						rating: faker.number.int({ min: 1, max: 5 }),
+						categoryId: category.id,
+						brand: faker.company.name(),
+						color: faker.color.human(),
+						weight: faker.number.float({ min: 0.1, max: 5 }),
+						dimensions: {
+							length: faker.number.int({ min: 10, max: 100 }),
+							width: faker.number.int({ min: 10, max: 100 }),
+							height: faker.number.int({ min: 10, max: 100 }),
+						},
 					},
 				});
 			}),
@@ -65,7 +77,7 @@ async function main() {
 
 		// Seed Reviews
 		const reviews = await Promise.all(
-			Array.from({ length: 20 }).map(() => {
+			Array.from({ length: 30 }).map(() => {
 				const user = faker.helpers.arrayElement(users);
 				const product = faker.helpers.arrayElement(products);
 				return prisma.review.create({
@@ -82,7 +94,7 @@ async function main() {
 
 		// Seed Carts
 		const carts = await Promise.all(
-			Array.from({ length: 10 }).map(() => {
+			Array.from({ length: 15 }).map(() => {
 				const user = faker.helpers.arrayElement(users);
 				const product = faker.helpers.arrayElement(products);
 				return prisma.cart.create({
