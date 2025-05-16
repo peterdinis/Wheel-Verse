@@ -7,11 +7,11 @@ export const categoryRouter = createTRPCRouter({
 	create: publicProcedure
 		.input(
 			z.object({
-				name: z.string(),
+				name: z.string().min(1, "Name is required"),
 				description: z.string().optional(),
 			}),
 		)
-		.mutation(async ({ ctx, input }) => {
+		.mutation(async ({ input }) => {
 			return db.category.create({
 				data: input,
 			});
@@ -19,12 +19,17 @@ export const categoryRouter = createTRPCRouter({
 
 	// Get a single category by ID
 	getById: publicProcedure
-		.input(z.object({ id: z.string() }))
-		.query(async ({ ctx, input }) => {
+		.input(
+			z.object({
+				id: z.string(),
+				includeProducts: z.boolean().optional().default(true),
+			}),
+		)
+		.query(async ({ input }) => {
 			return db.category.findUnique({
 				where: { id: input.id },
 				include: {
-					products: true,
+					products: input.includeProducts,
 				},
 			});
 		}),
@@ -38,8 +43,9 @@ export const categoryRouter = createTRPCRouter({
 				description: z.string().optional(),
 			}),
 		)
-		.mutation(async ({ ctx, input }) => {
+		.mutation(async ({ input }) => {
 			const { id, ...data } = input;
+
 			return db.category.update({
 				where: { id },
 				data,
@@ -49,26 +55,28 @@ export const categoryRouter = createTRPCRouter({
 	// Delete a category
 	delete: publicProcedure
 		.input(z.object({ id: z.string() }))
-		.mutation(async ({ ctx, input }) => {
+		.mutation(async ({ input }) => {
 			return db.category.delete({
 				where: { id: input.id },
 			});
 		}),
 
+	// List categories with optional search & pagination
 	list: publicProcedure
 		.input(
 			z.object({
 				search: z.string().optional(),
 				page: z.number().min(1).default(1),
 				limit: z.number().min(1).max(100).default(10),
+				includeProducts: z.boolean().optional().default(false),
 			}),
 		)
-		.query(async ({ ctx, input }) => {
-			const { search, page, limit } = input;
+		.query(async ({ input }) => {
+			const { search, page, limit, includeProducts } = input;
 
-			const where = {
-				name: search ? { contains: search, mode: "insensitive" } : undefined,
-			};
+			const where = search
+				? { name: { contains: search, mode: "insensitive" } }
+				: {};
 
 			const [categories, total] = await Promise.all([
 				db.category.findMany({
@@ -77,7 +85,7 @@ export const categoryRouter = createTRPCRouter({
 					take: limit,
 					orderBy: { createdAt: "desc" },
 					include: {
-						products: true,
+						products: includeProducts,
 					},
 				}),
 				db.category.count({ where }),
