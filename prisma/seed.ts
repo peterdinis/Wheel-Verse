@@ -13,7 +13,10 @@ async function main() {
 			Array.from({ length: 5 }).map(() =>
 				prisma.category.create({
 					data: {
-						name: faker.commerce.department() + "-" + faker.string.uuid().slice(0, 5),
+						name:
+							faker.commerce.department() +
+							"-" +
+							faker.string.uuid().slice(0, 5),
 						description: faker.lorem.sentence(),
 					},
 				}),
@@ -50,14 +53,13 @@ async function main() {
 						name,
 						slug: faker.helpers.slugify(name.toLowerCase()),
 						description: faker.commerce.productDescription(),
-						price: parseFloat(faker.commerce.price({ min: 10, max: 1000 })),
-						discount: faker.number.float({ min: 0, max: 30, precision: 0.1 }),
-						stock: faker.number.int({ min: 0, max: 100 }),
-						sku: faker.string.alphanumeric({ length: 8, casing: 'upper' }),
-						imageUrl: faker.image.urlLoremFlickr({ category: 'product' }),
-						gallery: Array.from({ length: 3 }).map(() =>
-							faker.image.urlLoremFlickr({ category: 'product' }),
+						price: Number.parseFloat(
+							faker.commerce.price({ min: 10, max: 1000 }),
 						),
+						discount: faker.number.float({ min: 0, max: 30 }),
+						stock: faker.number.int({ min: 0, max: 100 }),
+						sku: faker.string.alphanumeric({ length: 8, casing: "upper" }),
+						imageUrl: faker.image.urlLoremFlickr({ category: "product" }),
 						isAvaiable: faker.datatype.boolean(),
 						rating: faker.number.int({ min: 1, max: 5 }),
 						categoryId: category.id,

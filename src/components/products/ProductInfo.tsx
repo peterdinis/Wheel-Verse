@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { api } from "~/trpc/react";
 import { BicycleModel } from "../home/BicycleModel";
 import Reviews from "../reviews/ReviewsWrapper";
 import { Button } from "../ui/button";
-import { api } from "~/trpc/react";
 
 export const ProductInfo = () => {
 	const { productId } = useParams<{ productId: string }>();
@@ -24,9 +24,9 @@ export const ProductInfo = () => {
 	const [relatedProducts, setRelatedProducts] = useState<any[]>([]); // New state for related products
 
 	// Fetch product data
-	const { data, isLoading, isError } = api.product.getById.useQuery(
-		{ id: productId },
-	);
+	const { data, isLoading, isError } = api.product.getById.useQuery({
+		id: productId,
+	});
 
 	// Fetch related products (assuming you have an API for this)
 	const { data: relatedData } = api.product.getById.useQuery({ id: productId });
@@ -176,11 +176,11 @@ export const ProductInfo = () => {
 									<span className="text-5xl">{relatedProduct.image}</span>
 								</div>
 								<div className="p-4">
-									<h3 className="text-lg font-medium">{relatedProduct.name}</h3>
-									<p className="text-sm text-muted-foreground">
+									<h3 className="font-medium text-lg">{relatedProduct.name}</h3>
+									<p className="text-muted-foreground text-sm">
 										{relatedProduct.category} Bike
 									</p>
-									<p className="text-xl font-bold">${relatedProduct.price}</p>
+									<p className="font-bold text-xl">${relatedProduct.price}</p>
 								</div>
 							</Link>
 						</motion.div>

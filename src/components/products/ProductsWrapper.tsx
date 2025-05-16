@@ -30,23 +30,24 @@ const ProductsWrapper: FC = () => {
 	const categories = [
 		{ id: "all", name: "All Categories" },
 		...Array.from(
-		  new Map(
-			data?.products
-			  .map((p) => p.category)
-			  .filter((c): c is NonNullable<typeof c> => !!c)
-			  .map((c) => [c.id, c])
-		  ).values()
+			new Map(
+				data?.products
+					.map((p) => p.category)
+					.filter((c): c is NonNullable<typeof c> => !!c)
+					.map((c) => [c.id, c]),
+			).values(),
 		).map((cat) => ({
-		  id: cat.id,
-		  name: `${cat.name}-${cat.id.slice(0, 4)}`, 
+			id: cat.id,
+			name: `${cat.name}-${cat.id.slice(0, 4)}`,
 		})),
-	  ];
+	];
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const productsPerPage = 6;
 
 	const currentPriceRange =
-		priceRanges.find((range) => range.id === selectedPriceRange) || priceRanges[0];
+		priceRanges.find((range) => range.id === selectedPriceRange) ||
+		priceRanges[0];
 
 	const filteredProducts =
 		data?.products.filter((product) => {
@@ -54,7 +55,7 @@ const ProductsWrapper: FC = () => {
 				product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				product.description?.toLowerCase().includes(searchQuery.toLowerCase());
 
-				const matchesCategory =
+			const matchesCategory =
 				selectedCategory === "all" || product.category?.id === selectedCategory;
 
 			const matchesPrice =
@@ -72,7 +73,10 @@ const ProductsWrapper: FC = () => {
 
 	const indexOfLastProduct = currentPage * productsPerPage;
 	const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-	const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+	const currentProducts = sortedProducts.slice(
+		indexOfFirstProduct,
+		indexOfLastProduct,
+	);
 
 	const handlePageChange = (pageNumber: number) => {
 		setCurrentPage(pageNumber);
@@ -84,11 +88,11 @@ const ProductsWrapper: FC = () => {
 	}, [searchQuery, selectedCategory, selectedPriceRange, sortBy]);
 
 	if (isLoading)
-		return <Loader2 className="h-8 w-8 animate-spin mx-auto mt-20" />;
+		return <Loader2 className="mx-auto mt-20 h-8 w-8 animate-spin" />;
 
 	if (isError)
 		return (
-			<div className="mt-4 font-bold text-red-800 text-xl text-center">
+			<div className="mt-4 text-center font-bold text-red-800 text-xl">
 				Error fetching products
 			</div>
 		);
@@ -111,7 +115,7 @@ const ProductsWrapper: FC = () => {
 							<h1 className="mb-4 font-bold text-3xl md:text-4xl">
 								Our Bikes Collection
 							</h1>
-							<p className="text-gray-600 dark:text-sky-100 text-lg">
+							<p className="text-gray-600 text-lg dark:text-sky-100">
 								Find the perfect bike for your adventures
 							</p>
 						</div>
@@ -130,9 +134,9 @@ const ProductsWrapper: FC = () => {
 							placeholder="Search bikes..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full rounded-full border border-border bg-background p-3 pl-10 pr-10 text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+							className="w-full rounded-full border border-border bg-background p-3 pr-10 pl-10 text-foreground shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
 						/>
-						<Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+						<Search className="-translate-y-1/2 pointer-events-none absolute top-1/2 left-3 h-4 w-4 text-muted-foreground" />
 						<AnimatePresence>
 							{searchQuery && (
 								<motion.button
@@ -140,7 +144,7 @@ const ProductsWrapper: FC = () => {
 									animate={{ opacity: 1, scale: 1 }}
 									exit={{ opacity: 0, scale: 0.8 }}
 									onClick={() => setSearchQuery("")}
-									className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+									className="-translate-y-1/2 absolute top-1/2 right-3 rounded-full p-1 transition-colors hover:bg-muted"
 									aria-label="Clear search"
 								>
 									<X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
@@ -151,17 +155,20 @@ const ProductsWrapper: FC = () => {
 
 					{/* Product List */}
 					{currentProducts.length === 0 ? (
-						<div className="flex flex-col items-center justify-center mt-20 text-center text-muted-foreground">
-							<Ghost className="h-16 w-16 mb-4 text-gray-400 animate-bounce" />
-							<h3 className="text-2xl font-semibold">No bikes found</h3>
+						<div className="mt-20 flex flex-col items-center justify-center text-center text-muted-foreground">
+							<Ghost className="mb-4 h-16 w-16 animate-bounce text-gray-400" />
+							<h3 className="font-semibold text-2xl">No bikes found</h3>
 							<p className="mt-2 text-gray-500">
 								Try adjusting your search or filters to find something else.
 							</p>
 						</div>
 					) : (
-						<div className="grid grid-cols-1 mt-8 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+						<div className="mt-8 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 							{currentProducts.map((product) => (
-								<div key={product.id} className="rounded-lg border p-6 flex flex-col justify-between">
+								<div
+									key={product.id}
+									className="flex flex-col justify-between rounded-lg border p-6"
+								>
 									<div>
 										<div className="mb-4 flex justify-center">
 											<Image
@@ -179,7 +186,7 @@ const ProductsWrapper: FC = () => {
 									</div>
 									<Link
 										href={`/products/${product.id}`}
-										className="mt-4 inline-block text-center rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 transition"
+										className="mt-4 inline-block rounded-md bg-primary px-4 py-2 text-center text-white transition hover:bg-primary/90"
 									>
 										View Details
 									</Link>

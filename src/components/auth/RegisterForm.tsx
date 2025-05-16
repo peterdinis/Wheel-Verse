@@ -51,7 +51,8 @@ export function RegisterForm() {
 			setSuccess(true);
 			form.reset();
 		} catch (err: any) {
-			const message = err?.message || "Something went wrong during registration.";
+			const message =
+				err?.message || "Something went wrong during registration.";
 
 			// Try to extract field-level errors
 			if (err?.fieldErrors) {
@@ -153,8 +154,11 @@ export function RegisterForm() {
 							className="w-full text-black dark:text-white"
 							disabled={registerMutation.isPending}
 						>
-							{registerMutation.isPending ? 
-							<Loader2 className="animate-spin w-8 h-8" /> : "Register"}
+							{registerMutation.isPending ? (
+								<Loader2 className="h-8 w-8 animate-spin" />
+							) : (
+								"Register"
+							)}
 						</Button>
 
 						<Link href="/login" className="text-sky-600">
